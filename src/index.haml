@@ -1,0 +1,21 @@
+!!! 5
+%html
+  %head
+    %meta{type : "content", charset : "utf8"}
+    %link{rel : "stylesheet", href : "css/style.css"}
+    %title Это новая версия слайдера, йоу!
+  %body
+    %div.edit{id:"frame_0", class:"frame"}
+      %div
+        Вставьте сюда массив ссылок на слайды
+      %textarea{id:"urls",cols:"60",rows:"7"}
+      %div{class:"error hidden", id:"error_line"}
+      %br/
+    %div{data-action:"", class:"button hidden", id:"btn_prev", data-cur-frame: "0"}
+      Назад
+    %div{data-action:"renderPreview", class:"button", id:"btn_next", data-cur-frame: "0"}
+      Далее
+    %script{src:"js/jquery310.js"}
+    %script{src:"js/slider.js"}
+    %script{src:"js/script.js"}
+    

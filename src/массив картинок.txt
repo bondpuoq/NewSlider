@@ -1,0 +1,3 @@
+Массив картинок
+
+"http://vignette4.wikia.nocookie.net/simpsons/images/1/19/Love_is_a_Many_Splintered_Thing_(Couch_Gag)_1.JPG","http://vignette3.wikia.nocookie.net/simpsons/images/2/20/The_Blue_and_the_Gray_(Couch_Gag)_3.JPG","http://cdn.business2community.com/wp-content/uploads/2014/11/simpsons-futurama-crossover-couch-gag-released.png","http://edgecast.metatube.com/uploads/images/287671_735x390.jpeg","https://s-media-cache-ak0.pinimg.com/736x/9b/37/58/9b37582a074fb206cda0c8c60cc6ce6f.jpg"

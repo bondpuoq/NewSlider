@@ -1,0 +1,241 @@
+$font-size:14px;
+$error:red;
+$small-image-width: 200px;
+$small-image-height: 120px;
+$small-margin: 14px;
+$preview-block-width: 500px;
+$preview-block-height: 150px;
+$input-height: 89px;
+$slide-width: 600px;
+$slide-height: 400px;
+$bullet-width: 15px;
+$bullet-height: 15px;
+$arrow-width: 15px;
+$arrow-height: 15px;
+
+@mixin standart-font
+{
+  font-size: $font-size;
+  font-family: Verdana, Calibry, Helvetica, Arial;
+} 
+
+@mixin box($padding: 0.2em, $margin: 0.2em)
+{
+	box-sizing: border-box;
+  padding: $padding;
+  margin: $margin;
+}
+
+@mixin button($background-color : #000, $font-color: white, $border-color:gray, $width:200px)
+{
+  display: inline-block;
+  cursor: pointer;
+  border: 1px solid $border-color;
+  background-color: $background-color;
+  width: $width;
+  color: $font-color;
+  &:hover {
+    background-color: lighten($background-color, 20);
+  }
+}
+
+@mixin clearfix
+{
+  display: table;
+  content: "";
+  clear: both;
+}
+
+* {
+	@include standart-font;
+}
+
+div {
+  @include box(0.5em, 0.5em);
+}
+
+.button {
+  @include box(0.5em, 0.5em);
+  @include button();
+}
+
+.frame:after
+{
+  @include clearfix;
+}
+
+.preview__block
+{
+  @include box(0,$small-margin);
+  width: $preview-block-width + $small-margin;
+  min-height: $preview-block-height;
+  border: 1px solid black;
+  float: left;
+  z-index: 12;
+  &.disabled
+  {
+    z-index: 20;
+    background-color: rgba(200,200,200, 0.9);
+  }
+  &.disabled:after
+  {
+    content: "удален";
+    color:red;
+  }
+}
+
+.preview__image-block
+{
+  @include box(0,0);
+  margin-top: $small-margin;
+  margin-left: $small-margin;
+  float:left;
+  z-index: 9;
+}
+
+.preview__image-wrap
+{
+  @include box(0,0);
+  z-index: 9;
+}
+
+.preview__image
+{
+  @include box(0,0);
+  width: $small-image-width;
+  min-height: $small-image-height;
+  display: block;
+}
+
+.preview__comment-block
+{
+  @include box(0,0);
+  padding-left: $small-image-width + ($small-margin*2);
+  margin-top: $small-margin;
+  &:after
+  {
+    @include clearfix;
+  }
+}
+
+.preview__comment-caption
+{
+  @include box(0,0);
+  margin-bottom: $small-margin;
+}
+
+.preview__comment-input
+{
+  @include box(0,0);
+  z-index: 9;
+  width: $preview-block-width - $small-image-width - $small-margin*2;
+  height: $input-height;
+  resize: none;
+}
+
+.preview__slide-delete
+{
+  cursor: pointer;
+  z-index: 9;
+  border-bottom: 2px dashed blue;
+  margin-left: $small-margin;
+  margin-top: 0;
+  display: inline-block;
+  &:hover
+  {
+    background-color: rgb(150,150,150);
+  }
+}
+
+.error 
+{
+  color: $error;
+}
+
+.hidden
+{
+  display: none;
+}
+
+
+
+.slider-container{
+  position:relative;
+  width:$slide-width;
+  height:$slide-height;
+  overflow:hidden;
+  padding:0px;
+  .prev, .next{
+    position:absolute;
+    top:$slide-height/2 - $arrow-height;
+    display:block;
+    width:50px;
+    height:50px;
+    cursor:pointer;
+  }
+  .prev{
+    left:15px;
+    background:url('../images/left.png');
+  }
+  .next{
+    right:10px;
+    background:url('../images/right.png');
+  } 
+}
+
+.slider{
+  position:relative;
+  width:100000px;
+  height: $slide-height;
+  padding: 0;
+  div{
+    float:left;
+    width: $slide-width;
+    height: $slide-height;
+    margin: 0;
+    padding:0;
+    img{
+      width: $slide-width;
+      height: $slide-height;
+      display: block;
+      margin: 0;
+      padding:0;
+    }
+    div
+    {
+      top:0px;
+      height: 20px;
+      display:block;
+      position:absolute;
+      color:white;
+      font-weight: bold;
+      margin: 0;
+      background-color: rgba(30,30,30,0.7);
+    }
+  }
+}
+
+.bullets{
+  position:absolute;
+  bottom:10%;
+  text-align: center;
+  height:11px;
+  margin: 0;
+  padding: 0;
+  list-style:none;
+  width: $slide-width;
+  display: inline-block;
+  li{
+    width:15px;
+    height:15px;
+    margin:0;
+    padding:0;
+    display: inline-block;
+    background:url(../images/bullet-grey.png) no-repeat;
+    background-size: $bullet-width $bullet-height;
+    &.active{
+      background:url(../images/bullet-yellow.png) no-repeat;
+      background-size: $bullet-width $bullet-height;
+    }
+  }
+}
