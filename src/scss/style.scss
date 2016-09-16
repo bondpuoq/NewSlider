@@ -4,7 +4,7 @@ $small-image-width: 200px;
 $small-image-height: 120px;
 $small-margin: 14px;
 $preview-block-width: 500px;
-$preview-block-height: 150px;
+$preview-block-height: 180px;
 $input-height: 89px;
 $slide-width: 600px;
 $slide-height: 400px;
@@ -64,178 +64,186 @@ div {
   @include clearfix;
 }
 
-.preview__block
-{
-  @include box(0,$small-margin);
-  width: $preview-block-width + $small-margin;
-  min-height: $preview-block-height;
-  border: 1px solid black;
-  float: left;
-  z-index: 12;
-  &.disabled
+.preview
+{ 
+  &.block
   {
-    z-index: 20;
-    background-color: rgba(200,200,200, 0.9);
+    @include box(0,$small-margin);
+    width: $preview-block-width + $small-margin;
+    height: $preview-block-height;
+    border: 1px solid black;
+    float: left;
+    z-index: 12;
+    &.disabled
+    {
+      z-index: 20;
+      background-color: rgba(200,200,200, 0.9);
+    }
+    &.disabled:after
+    {
+      content: "удален";
+      color:red;
+    }
   }
-  &.disabled:after
+
+  &.image-block
   {
-    content: "удален";
-    color:red;
+    @include box(0,0);
+    margin-top: $small-margin;
+    margin-left: $small-margin;
+    float:left;
+    z-index: 9;
   }
-}
 
-.preview__image-block
-{
-  @include box(0,0);
-  margin-top: $small-margin;
-  margin-left: $small-margin;
-  float:left;
-  z-index: 9;
-}
-
-.preview__image-wrap
-{
-  @include box(0,0);
-  z-index: 9;
-}
-
-.preview__image
-{
-  @include box(0,0);
-  width: $small-image-width;
-  min-height: $small-image-height;
-  display: block;
-}
-
-.preview__comment-block
-{
-  @include box(0,0);
-  padding-left: $small-image-width + ($small-margin*2);
-  margin-top: $small-margin;
-  &:after
+  &.image-wrap
   {
-    @include clearfix;
+    @include box(0,0);
+    z-index: 9;
   }
-}
 
-.preview__comment-caption
-{
-  @include box(0,0);
-  margin-bottom: $small-margin;
-}
-
-.preview__comment-input
-{
-  @include box(0,0);
-  z-index: 9;
-  width: $preview-block-width - $small-image-width - $small-margin*2;
-  height: $input-height;
-  resize: none;
-}
-
-.preview__slide-delete
-{
-  cursor: pointer;
-  z-index: 9;
-  border-bottom: 2px dashed blue;
-  margin-left: $small-margin;
-  margin-top: 0;
-  display: inline-block;
-  &:hover
+  &.image
   {
-    background-color: rgb(150,150,150);
+    @include box(0,0);
+    width: $small-image-width;
+    height: $small-image-height;
+    display: block;
+  }
+
+  &.comment-block
+  {
+    @include box(0,0);
+    padding-left: $small-image-width + ($small-margin*2);
+    margin-top: $small-margin;
+    &:after
+    {
+      @include clearfix;
+    }
+  }
+
+  &.comment-caption
+  {
+    @include box(0,0);
+    margin-bottom: $small-margin;
+  }
+
+  &.comment-input
+  {
+    @include box(0,0);
+    z-index: 9;
+    width: $preview-block-width - $small-image-width - $small-margin*2;
+    height: $input-height;
+    resize: none;
+  }
+
+  &.slide-delete
+  {
+    cursor: pointer;
+    z-index: 9;
+    border-bottom: 2px dashed blue;
+    margin-left: $small-margin;
+    margin-top: 0;
+    display: inline-block;
+    &:hover
+    {
+      background-color: #ddd;
+    }
   }
 }
 
-.error 
+.js-error 
 {
   color: $error;
 }
 
-.hidden
+.js-hidden
 {
   display: none;
 }
 
 
+.slider {
+    position:relative;
+    width:$slide-width;
+    height:$slide-height;
+    overflow:hidden;
+    padding:0;
+    margin:0;
 
-.slider-container{
-  position:relative;
-  width:$slide-width;
-  height:$slide-height;
-  overflow:hidden;
-  padding:0px;
   .prev, .next{
-    position:absolute;
-    top:$slide-height/2 - $arrow-height;
-    display:block;
-    width:50px;
-    height:50px;
-    cursor:pointer;
+      position:absolute;
+      top:$slide-height/2 - $arrow-height;
+      display:block;
+      width:50px;
+      height:50px;
+      cursor:pointer;
   }
   .prev{
-    left:15px;
-    background:url('../images/left.png');
+      left:15px;
+      background:url('../images/left.png');
   }
   .next{
-    right:10px;
-    background:url('../images/right.png');
+      right:10px;
+      background:url('../images/right.png');
   } 
-}
 
-.slider{
-  position:relative;
-  width:100000px;
-  height: $slide-height;
-  padding: 0;
-  div{
-    float:left;
-    width: $slide-width;
+  .slides{
+    position:relative;
+    width:100000px;
     height: $slide-height;
-    margin: 0;
-    padding:0;
-    img{
+    padding: 0;
+    margin:0;
+    margin-left: -($slide-width);
+    transition: margin-left 1s linear;
+    div{
+      float:left;
       width: $slide-width;
       height: $slide-height;
-      display: block;
       margin: 0;
       padding:0;
+      img{
+        width: $slide-width;
+        height: $slide-height;
+        display: block;
+        margin: 0;
+        padding:0;
+      }
+      div
+      {
+        top:0px;
+        padding: 10px 10px;
+        height: auto;
+        display:block;
+        position:absolute;
+        color:white;
+        font-weight: bold;
+        margin: 0;
+        background-color: rgba(30,30,30,0.7);
+      }
     }
-    div
-    {
-      top:0px;
-      height: 20px;
-      display:block;
-      position:absolute;
-      color:white;
-      font-weight: bold;
-      margin: 0;
-      background-color: rgba(30,30,30,0.7);
+  }
+  .bullets{
+    position:absolute;
+    bottom:10%;
+    text-align: center;
+    height:11px;
+    margin: 0;
+    padding: 0;
+    list-style:none;
+    width: $slide-width;
+    display: inline-block;
+    li{
+      width:15px;
+      height:15px;
+      margin:0;
+      padding:0;
+      display: inline-block;
+      background:url(../images/bullet-grey.png) no-repeat;
+      background-size: $bullet-width $bullet-height;
+      &.active{
+        background:url(../images/bullet-yellow.png) no-repeat;
+        background-size: $bullet-width $bullet-height;
+      }
     }
   }
 }
 
-.bullets{
-  position:absolute;
-  bottom:10%;
-  text-align: center;
-  height:11px;
-  margin: 0;
-  padding: 0;
-  list-style:none;
-  width: $slide-width;
-  display: inline-block;
-  li{
-    width:15px;
-    height:15px;
-    margin:0;
-    padding:0;
-    display: inline-block;
-    background:url(../images/bullet-grey.png) no-repeat;
-    background-size: $bullet-width $bullet-height;
-    &.active{
-      background:url(../images/bullet-yellow.png) no-repeat;
-      background-size: $bullet-width $bullet-height;
-    }
-  }
-}

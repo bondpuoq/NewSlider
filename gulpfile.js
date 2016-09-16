@@ -10,6 +10,7 @@ var uglify = require('gulp-uglify');
 var imageMin = require('gulp-imagemin');
 var pngQuant = require('imagemin-pngquant');
 var haml = require('gulp-haml');
+var concat = require('gulp-concat');
 
 
 // Компиллируем SASS в CSS и минифицируем css и добавляем префиксы нужные
@@ -26,13 +27,6 @@ gulp.task('sass', function() {
   .pipe(connect.reload());
 });
 
-// Перетаскиваем html в каталог боевой
-gulp.task('html', function() {
-  gulp.src('./src/*.html')
-  .pipe(gulp.dest('./dest/'))
-  .pipe(connect.reload());
-});
-
 gulp.task('haml', function() {
   gulp.src('./src/*.haml')
   .pipe(haml())
@@ -42,8 +36,8 @@ gulp.task('haml', function() {
 
 // Ужаснифицируем JS
 gulp.task('js', function(){
-  gulp.src('./src/js/*.js')
-  //.pipe(uglify())
+  gulp.src(['./src/js/jquery310.js','./src/js/*.js'])
+  .pipe(concat('allScripts.js'))
   .pipe(gulp.dest('./dest/js/'))
   .pipe(connect.reload());
 });
@@ -73,12 +67,11 @@ gulp.task('connect', function() {
 // Добавляем процессы следящие за файлами
 gulp.task('watch', function(){
   gulp.watch('./src/scss/*.scss', ['sass']);
-  gulp.watch('./src/*.html', ['html']);
   gulp.watch('./src/*.haml', ['haml']);
   gulp.watch('./src/js/*.js',['js']);
   gulp.watch('./src/images/*',['img']);
 });
 
 // Задача по умолчанию
-gulp.task('default', ['html', 'haml', 'sass', 'js', 'img', 'connect', 'watch']);
+gulp.task('default', ['connect', 'haml', 'sass', 'js', 'img',  'watch']);
 

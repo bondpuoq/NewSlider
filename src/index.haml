@@ -9,13 +9,42 @@
       %div
         Вставьте сюда массив ссылок на слайды
       %textarea{id:"urls",cols:"60",rows:"7"}
-      %div{class:"error hidden", id:"error_line"}
+      %div{class:"error js-hidden", id:"error_line"}
       %br/
-    %div{data-action:"", class:"button hidden", id:"btn_prev", data-cur-frame: "0"}
+    %div{id:"frame_1", class:"frame js-hidden"}
+      %script{id:"preview-template", type:"x-handlebars-template"}
+        {{#each previews}}
+          %div{class:"preview block", data-preview-number: "{{number}}" }
+            %div{class: "preview image-block"}
+              %div{class: "preview image-wrap"}
+                %img{class: "preview image", src: "{{src}}" }
+            %div{class: "preview comment-block"}
+              %div{class: "preview comment-caption"}
+                Надпись к слайду
+              %textarea{class: "preview comment-input js-comment-input"}
+            %div{class: "preview slide-delete js-slide-delete"}
+              Удалить
+        {{/each}}
+    %div{id:"frame_2", class:"frame js-hidden"}
+      %script{id:"slider1", type:"x-handlebars-template"}
+        %div{class:"slider js-slider-wrapper"}
+          %div{class:"slides js-slider-images", id: "slides"}
+            {{#each data}}
+              %div
+                %img{src: "{{src}}"}
+                {{#if comment}}
+                  %div {{comment}}
+                {{/if}}
+            {{/each}}
+          %ul{class:"bullets js-slider-bullets"}
+            {{#each data}}
+              %li{data-slide-number:"{{@index}}"}
+            {{/each}}
+          %div{class:"prev js-slider-nav", data-direction: "1", data-next-slide:"-1"}
+          %div{class:"next js-slider-nav", data-direction: "-1", data-next-slide:"1"}
+    %div{data-action:"", class:"button js-hidden", id:"btn_prev", data-next-frame: "-1", data-current-frame: "0"}
       Назад
-    %div{data-action:"renderPreview", class:"button", id:"btn_next", data-cur-frame: "0"}
+    %div{data-action:"renderPreview", class:"button", id:"btn_next", data-next-frame: "1", data-current-frame: "0"}
       Далее
-    %script{src:"js/jquery310.js"}
-    %script{src:"js/slider.js"}
-    %script{src:"js/script.js"}
+    %script{src:"js/allScripts.js"}
     
