@@ -1,11 +1,13 @@
 function Slider(previewObject, sliderTemplate){
+  var interval;
   self = this;
-  var slider, sliderWrapper, sliderImages;
+  //var slider, sliderWrapper, sliderImages;
   self = {
     generateSlider : _generateSlider,
     toggleSlideByButton : _toggleSlideByButton,
     toggleSlideByBullet : _toggleSlideByBullet,
-    data : _getSliderData(previewObject)
+    data : _getSliderData(previewObject),
+    autoSlide : _autoSlide
   }
   
   function _getSliderData(previewObject){
@@ -29,8 +31,10 @@ function Slider(previewObject, sliderTemplate){
     $(self.sliderImages).find('div:last-child').clone().prependTo(self.sliderImages);
     $(self.sliderImages).find('div').eq(1).clone().appendTo(self.sliderImages);
     $(self.sliderNav).bind('click', self.toggleSlideByButton);
+    $(self.sliderNav).hover(function() { _stopAutoSlide(); }, _autoSlide);
     $(self.sliderBullets).find('li').bind('click', self.toggleSlideByBullet);
     $(self.sliderBullets).find('li').eq(0).addClass('active');
+    $(self.sliderBullets).hover(function() { _stopAutoSlide(); }, _autoSlide);
   }
   
   function _initializeSliderVars(appendTo){
@@ -49,10 +53,14 @@ function Slider(previewObject, sliderTemplate){
   function _toggleSlideByButton(){
     var currentButton, direction, nextMargin;
     currentButton = this;
-    self.direction = parseInt($(currentButton).attr('data-direction'));
-    
+    if ($(currentButton).hasClass('js-slider-nav')){
+      self.direction = parseInt($(currentButton).attr('data-direction'));
+    }
+    else {
+      self.direction = -1;
+    }
     self.currentMargin = self.currentMargin + (self.direction * self.slideWidth); 
-    
+
     //Переключаем слайд
     $(self.sliderImages).css('margin-left', self.currentMargin);
     
@@ -84,6 +92,15 @@ function Slider(previewObject, sliderTemplate){
     self.currentSlide = slideNumber;
     $(self.sliderBullets).find('li').removeClass('active');
     $(self.sliderBullets).find('li').eq(+slideNumber).addClass('active');
+  }
+  
+  // Автопрокрутка слайдера
+  function _autoSlide(){
+    interval = setInterval(function(){ self.direction = -1 ; _toggleSlideByButton(); }, 5000);
+  }
+  // Остановим autoslide когда у нас hover
+  function _stopAutoSlide(){      
+    window.clearInterval(interval);
   }
   
   // Функция перемещающая слайды на начало или на конец, если мы нажали мы попытались переместиться за границы wrapper'a слайдов

@@ -92,5 +92,6 @@
     slider = new Slider(preview, 'slider1');
     appendTo = '#frame_2';
     slider.generateSlider(appendTo);
+    slider.autoSlide();
   }
 })();
