@@ -14815,6 +14815,7 @@ function Slider(previewObject, sliderTemplate){
     var arrayToChange, readyData;
     arrayToChange = Array.from(previewObject.data.previews);
     readyData = jQuery.grep(arrayToChange, function(cur){return !cur.deleted;})
+    console.log(readyData);
     return readyData;
   }
   
@@ -14830,8 +14831,10 @@ function Slider(previewObject, sliderTemplate){
   }
   
   function _prepareSlider(){
-    $(self.sliderImages).find('div:last-child').clone().prependTo(self.sliderImages);
-    $(self.sliderImages).find('div').eq(1).clone().appendTo(self.sliderImages);
+    console.log($(self.sliderImages).children('div:last-child'));
+    console.log($(self.sliderImages).children('div').eq(1));
+    $(self.sliderImages).children('div:last-child').clone().prependTo(self.sliderImages);
+    $(self.sliderImages).children('div').eq(1).clone().appendTo(self.sliderImages);
     $(self.sliderNav).bind('click', self.toggleSlideByButton);
     $(self.sliderNav).hover(function() { _stopAutoSlide(); }, _autoSlide);
     $(self.sliderBullets).find('li').bind('click', self.toggleSlideByBullet);
