@@ -219,10 +219,6 @@ div {
         background-color: rgba(30,30,30,0.7);
       }
     }
-    div:first-child
-    {
-      margin-left: -($slide-width);
-    }
   }
   .bullets{
     position:absolute;

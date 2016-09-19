@@ -166,8 +166,6 @@ div {
         font-weight: bold;
         margin: 0;
         background-color: rgba(30, 30, 30, 0.7); }
-    .slider .slides div:first-child {
-      margin-left: -600px; }
   .slider .bullets {
     position: absolute;
     bottom: 10%;

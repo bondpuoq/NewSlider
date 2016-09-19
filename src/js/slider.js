@@ -30,10 +30,10 @@ function Slider(previewObject, sliderTemplate){
   }
   
   function _prepareSlider(){
-    console.log($(self.sliderImages).children('div:last-child'));
-    console.log($(self.sliderImages).children('div').eq(1));
-    $(self.sliderImages).children('div:last-child').clone().prependTo(self.sliderImages);
-    $(self.sliderImages).children('div').eq(1).clone().appendTo(self.sliderImages);
+    //console.log($(self.sliderImages).children('div:last-child'));
+    //console.log($(self.sliderImages).children('div').eq(1));
+    //$(self.sliderImages).children('div:last-child').clone().prependTo(self.sliderImages);
+    //$(self.sliderImages).children('div').eq(1).clone().appendTo(self.sliderImages);
     $(self.sliderNav).bind('click', self.toggleSlideByButton);
     $(self.sliderNav).hover(function() { _stopAutoSlide(); }, _autoSlide);
     $(self.sliderBullets).find('li').bind('click', self.toggleSlideByBullet);
@@ -50,7 +50,7 @@ function Slider(previewObject, sliderTemplate){
     self.currentSlide = 0;
     self.direction = -1;
     self.slideWidth = $(self.sliderWrapper).width();
-    self.slideCount = $(self.sliderImages).find('div').length;
+    self.slideCount = $(self.sliderImages).children('div').length;
     self.currentMargin = 0;
   }
   
@@ -67,22 +67,28 @@ function Slider(previewObject, sliderTemplate){
 
     //Переключаем слайд
     $(self.sliderImages).css('margin-left', self.currentMargin);
-    
+
+
     // Текущий слайд
     self.currentSlide = self.currentSlide - +self.direction;
-    
+
+    console.log(self.currentSlide);
+
     // Случаи, когда слайд последний или первый
-    if (self.currentSlide > self.slideCount-1){
+    if (+self.currentSlide == +self.slideCount){
+      console.log(self.currentSlide);
       self.currentSlide = 0;
-      _moveTo('first');
-    } else if (self.currentSlide < 0) {
+      console.log(self.currentSlide);
+      _circleIt();
+    } else if (+self.currentSlide < 0) {
+      console.log(self.currentSlide);
       self.currentSlide = self.slideCount-1;
-      _moveTo('last');
+      _circleIt();
     }
-    
+
     // Подсветим нужный буллет
     $(self.sliderBullets).find('li').removeClass('active');
-    $(self.sliderBullets).find('li').eq(self.currentSlide).addClass('active');
+    $(self.sliderBullets).find('li').eq(self.currentSlide).addClass('active');  
   }
   
   // Переключение через буллеты
@@ -108,26 +114,12 @@ function Slider(previewObject, sliderTemplate){
   }
   
   // Функция перемещающая слайды на начало или на конец, если мы нажали мы попытались переместиться за границы wrapper'a слайдов
-  function _moveTo(where){
-    var neededMargin, currentTransition;
-    currentTransition = $(self.sliderImages).css('transition');
-    $(self.sliderImages).removeClass('.slides');
-    switch(where){
-      case ('first'): { 
-        neededMargin = 0;
-        $(self.sliderImages).css('margin-left', neededMargin);
-        self.currentMargin = neededMargin;
-        self.currentSlide = 0;
-        break; };
-      case ('last'): { 
-        neededMargin = -self.slideWidth*(self.slideCount-1);
-        $(self.sliderImages).css('margin-left', neededMargin); 
-        self.currentMargin = neededMargin;
-        self.currentSlide = self.slideCount-1;
-        break; };
-    }
-    $(self.sliderImages).addClass('.slides');
+  function _circleIt(){
+    neededMargin = -(self.slideWidth * self.currentSlide);
+    $(self.sliderImages).css('margin-left', neededMargin);
+    self.currentMargin = neededMargin;
   }
+
   
   return self;
 }
