@@ -192,7 +192,6 @@ div {
     height: $slide-height;
     padding: 0;
     margin:0;
-    margin-left: -($slide-width);
     transition: margin-left 1s linear;
     div{
       float:left;
@@ -219,6 +218,10 @@ div {
         margin: 0;
         background-color: rgba(30,30,30,0.7);
       }
+    }
+    div:first-child
+    {
+      margin-left: -($slide-width);
     }
   }
   .bullets{

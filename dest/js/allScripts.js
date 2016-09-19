@@ -10075,7 +10075,9 @@ return jQuery;
     $('#frame_'+currentFrame).addClass(hiddenClass);
     if (+nextFrame==0) { $('#btn_prev').addClass(hiddenClass); }
     else { $('#btn_prev').removeClass(hiddenClass); }
-    
+    if (+nextFrame==2) { $('#btn_next').addClass(hiddenClass); }
+    else $('#btn_next').removeClass(hiddenClass);
+
     if (currentFrame < nextFrame){
       $('#btn_next').attr('data-next-frame', +nextFrame + 1);
       $('#btn_next').attr('data-current-frame', +nextFrame);
@@ -10150,6 +10152,9 @@ return jQuery;
   
   function createSlider(){
     var appendTo;
+    if ($('.slider div').length > 0)
+      $('.slider').remove();
+      
     slider = new Slider(preview, 'slider1');
     appendTo = '#frame_2';
     slider.generateSlider(appendTo);
@@ -14765,34 +14770,38 @@ return /******/ (function(modules) { // webpackBootstrap
 });
 ;
 function Preview(rawUrlString) {
-  var rawUrls = rawUrlString;
-  this.data = {};
-  this.urlArray = [];
-  getUrls();
+  var self;
   
+  self = this;
+  self = {
+    generatePreview : _generatePreview,
+    data : {previews : _getUrls(rawUrlString) }
+  }
+
+
   // Делаем массив url'ов из введенной пользователем строки
-  function getUrls(){
-    var i = 0;
+  function _getUrls(rawUrlString){
+    var i = 0, urlArray;
     urlArray = rawUrlString.split(",")
       .map(function(current){
         return {number: i++, src: current.trim().replace("\"","")}
       });
+    return urlArray;
     };
-  Preview.prototype.generatePreview = generatePreview;
   
   // Генерим превью и возвращаем разметку
-  function generatePreview(){
+  function _generatePreview(){
     var previewHtml, previewTemplate;
     previewHtml = $('#preview-template').html();
     previewTemplate = Handlebars.compile(previewHtml);
-    this.data = { previews : urlArray };
-    return previewTemplate(this.data);
+    return previewTemplate(self.data);
     //$('#frame_1').append(previewTemplate(this.data));
-  }  
+  } 
+  return self; 
 }
 function Slider(previewObject, sliderTemplate){
   var interval;
-  self = this;
+  var self = this;
   //var slider, sliderWrapper, sliderImages;
   self = {
     generateSlider : _generateSlider,
@@ -14814,6 +14823,7 @@ function Slider(previewObject, sliderTemplate){
     template = $('#'+sliderTemplate).html();
     slideShow = Handlebars.compile(template);
     sliderHtml = slideShow(self);
+    console.log(self.data);
     $(appendTo).append(sliderHtml);
     _initializeSliderVars(appendTo);
     _prepareSlider();
@@ -14839,7 +14849,7 @@ function Slider(previewObject, sliderTemplate){
     self.direction = -1;
     self.slideWidth = $(self.sliderWrapper).width();
     self.slideCount = $(self.sliderImages).find('div').length;
-    self.currentMargin = -(self.slideWidth);
+    self.currentMargin = 0;
   }
   
   function _toggleSlideByButton(){
@@ -14902,7 +14912,7 @@ function Slider(previewObject, sliderTemplate){
     $(self.sliderImages).removeClass('.slides');
     switch(where){
       case ('first'): { 
-        neededMargin = -self.slideWidth;
+        neededMargin = 0;
         $(self.sliderImages).css('margin-left', neededMargin);
         self.currentMargin = neededMargin;
         self.currentSlide = 0;

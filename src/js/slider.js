@@ -1,6 +1,6 @@
 function Slider(previewObject, sliderTemplate){
   var interval;
-  self = this;
+  var self = this;
   //var slider, sliderWrapper, sliderImages;
   self = {
     generateSlider : _generateSlider,
@@ -14,6 +14,7 @@ function Slider(previewObject, sliderTemplate){
     var arrayToChange, readyData;
     arrayToChange = Array.from(previewObject.data.previews);
     readyData = jQuery.grep(arrayToChange, function(cur){return !cur.deleted;})
+    console.log(readyData);
     return readyData;
   }
   
@@ -22,14 +23,17 @@ function Slider(previewObject, sliderTemplate){
     template = $('#'+sliderTemplate).html();
     slideShow = Handlebars.compile(template);
     sliderHtml = slideShow(self);
+    console.log(self.data);
     $(appendTo).append(sliderHtml);
     _initializeSliderVars(appendTo);
     _prepareSlider();
   }
   
   function _prepareSlider(){
-    $(self.sliderImages).find('div:last-child').clone().prependTo(self.sliderImages);
-    $(self.sliderImages).find('div').eq(1).clone().appendTo(self.sliderImages);
+    console.log($(self.sliderImages).children('div:last-child'));
+    console.log($(self.sliderImages).children('div').eq(1));
+    $(self.sliderImages).children('div:last-child').clone().prependTo(self.sliderImages);
+    $(self.sliderImages).children('div').eq(1).clone().appendTo(self.sliderImages);
     $(self.sliderNav).bind('click', self.toggleSlideByButton);
     $(self.sliderNav).hover(function() { _stopAutoSlide(); }, _autoSlide);
     $(self.sliderBullets).find('li').bind('click', self.toggleSlideByBullet);
@@ -47,7 +51,7 @@ function Slider(previewObject, sliderTemplate){
     self.direction = -1;
     self.slideWidth = $(self.sliderWrapper).width();
     self.slideCount = $(self.sliderImages).find('div').length;
-    self.currentMargin = -(self.slideWidth);
+    self.currentMargin = 0;
   }
   
   function _toggleSlideByButton(){
@@ -110,7 +114,7 @@ function Slider(previewObject, sliderTemplate){
     $(self.sliderImages).removeClass('.slides');
     switch(where){
       case ('first'): { 
-        neededMargin = -self.slideWidth;
+        neededMargin = 0;
         $(self.sliderImages).css('margin-left', neededMargin);
         self.currentMargin = neededMargin;
         self.currentSlide = 0;

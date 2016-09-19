@@ -14,7 +14,9 @@
     $('#frame_'+currentFrame).addClass(hiddenClass);
     if (+nextFrame==0) { $('#btn_prev').addClass(hiddenClass); }
     else { $('#btn_prev').removeClass(hiddenClass); }
-    
+    if (+nextFrame==2) { $('#btn_next').addClass(hiddenClass); }
+    else $('#btn_next').removeClass(hiddenClass);
+
     if (currentFrame < nextFrame){
       $('#btn_next').attr('data-next-frame', +nextFrame + 1);
       $('#btn_next').attr('data-current-frame', +nextFrame);
@@ -89,6 +91,9 @@
   
   function createSlider(){
     var appendTo;
+    if ($('.slider div').length > 0)
+      $('.slider').remove();
+      
     slider = new Slider(preview, 'slider1');
     appendTo = '#frame_2';
     slider.generateSlider(appendTo);
