@@ -5,30 +5,30 @@
     %link{rel : "stylesheet", href : "css/style.css"}
     %title Это новая версия слайдера, йоу!
   %body
-    %div.edit{id:"frame_0", class:"frame"}
+    %div#js-frame-0.edit.frame.js-frame
       %div
         Вставьте сюда массив ссылок на слайды
-      %textarea{id:"urls",cols:"60",rows:"7"}
-      %div{class:"error js-hidden", id:"error_line"}
-      %br/
-    %div{id:"frame_1", class:"frame js-hidden"}
-      %script{id:"preview-template", type:"x-handlebars-template"}
-        {{#each previews}}
-          %div{class:"preview block", data-preview-number: "{{number}}" }
-            %div{class: "preview image-block"}
-              %div{class: "preview image-wrap"}
-                %img{class: "preview image", src: "{{src}}" }
-            %div{class: "preview comment-block"}
-              %div{class: "preview comment-caption"}
+      %textarea#urls.inputUrl
+      %div#error_line.error.js-hidden
+    %div#js-frame-1.frame.js-frame.hidden
+      %script#js-preview-template{type:"x-handlebars-template"}
+        {{#each this}}
+          %div.preview.block
+            %div.preview.image-block
+              %div.preview.image-wrap
+                %img.preview.image{src: "{{src}}" }
+            %div.preview.comment-block
+              %div.preview.comment-caption
                 Надпись к слайду
-              %textarea{class: "preview comment-input js-comment-input"}
-            %div{class: "preview slide-delete js-slide-delete"}
+              %textarea.preview.comment-input.js-comment-input{data-preview-number: "{{@index}}"}
+                {{comment}}
+            %div.preview.slide-delete.js-slide-delete{data-preview-number:"{{@index}}"}
               Удалить
         {{/each}}
-    %div{id:"frame_2", class:"frame js-hidden"}
-      %script{id:"slider1", type:"x-handlebars-template"}
-        %div{class:"slider js-slider-wrapper"}
-          %div{class:"slides js-slider-images", id: "slides"}
+    %div#js-frame-2.frame.js-frame.hidden
+      %script#js-slider-1{type:"x-handlebars-template"}
+        %div.slider.js-slider-wrapper
+          %div#slides.slides.js-slider-images
             {{#each data}}
               %div
                 %img{src: "{{src}}"}
@@ -36,15 +36,15 @@
                   %div {{comment}}
                 {{/if}}
             {{/each}}
-          %ul{class:"bullets js-slider-bullets"}
+          %ul.bullets.js-slider-bullets
             {{#each data}}
               %li{data-slide-number:"{{@index}}"}
             {{/each}}
-          %div{class:"prev js-slider-nav", data-direction: "1", data-next-slide:"-1"}
-          %div{class:"next js-slider-nav", data-direction: "-1", data-next-slide:"1"}
-    %div{data-action:"", class:"button js-hidden", id:"btn_prev", data-next-frame: "-1", data-current-frame: "0"}
+          %div.prev.js-slider-nav{data-nav-direction: "1", data-next-slide:"-1"}
+          %div.next.js-slider-nav{data-nav-direction: "-1", data-next-slide:"1"}
+    %div.button.js-btn.js-hidden{id:"js-btn-prev", data-current-frame: "0"}
       Назад
-    %div{data-action:"renderPreview", class:"button", id:"btn_next", data-next-frame: "1", data-current-frame: "0"}
+    %div.button.js-btn{id:"js-btn-next", data-current-frame: "0"}
       Далее
     %script{src:"js/allScripts.js"}
     

@@ -39,8 +39,7 @@ $arrow-height: 15px;
   }
 }
 
-@mixin clearfix
-{
+@mixin clearfix {
   display: table;
   content: "";
   clear: both;
@@ -55,13 +54,19 @@ div {
 }
 
 .button {
-  @include box(0.5em, 0.5em);
+  @include box(0.5em, 0.4em);
   @include button();
+  margin-left: 15px;
+  width: 192px;
 }
 
-.frame:after
-{
+.frame:after {
   @include clearfix;
+}
+
+.inputUrl {
+  width: 400px;
+  height: 200px;
 }
 
 .preview
@@ -155,7 +160,7 @@ div {
   color: $error;
 }
 
-.js-hidden
+.hidden
 {
   display: none;
 }

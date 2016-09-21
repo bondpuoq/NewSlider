@@ -13,13 +13,15 @@ div {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   padding: 0.5em;
-  margin: 0.5em;
+  margin: 0.4em;
   display: inline-block;
   cursor: pointer;
   border: 1px solid gray;
   background-color: #000;
   width: 200px;
-  color: white; }
+  color: white;
+  margin-left: 15px;
+  width: 192px; }
   .button:hover {
     background-color: #333333; }
 
@@ -27,6 +29,10 @@ div {
   display: table;
   content: "";
   clear: both; }
+
+.inputUrl {
+  width: 400px;
+  height: 200px; }
 
 .preview.block {
   -webkit-box-sizing: border-box;
@@ -113,7 +119,7 @@ div {
 .js-error {
   color: red; }
 
-.js-hidden {
+.hidden {
   display: none; }
 
 .slider {

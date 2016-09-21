@@ -10061,104 +10061,66 @@ return jQuery;
 
 'use strict';
 (function(){
-  $('#btn_prev').bind('click', navigation);
-  $('#btn_next').bind('click', navigation);
+  var preview;
+  // Клик по кнопке навигации (вперед/назад)
+  $('body').on('click','.js-btn', navigation);
   
-  var preview, slider;
+  var frames, preview, slider;
   // Навигация по кнопкам "Вперед" и "Назад"
-  function navigation(){
-    var nextFrame, currentFrame, hiddenClass;
-    hiddenClass = 'js-hidden';
-    nextFrame = $(this).attr('data-next-frame');
-    currentFrame = $(this).attr('data-current-frame');
-    $('#frame_'+nextFrame).removeClass(hiddenClass);
-    $('#frame_'+currentFrame).addClass(hiddenClass);
-    if (+nextFrame==0) { $('#btn_prev').addClass(hiddenClass); }
-    else { $('#btn_prev').removeClass(hiddenClass); }
-    if (+nextFrame==2) { $('#btn_next').addClass(hiddenClass); }
-    else $('#btn_next').removeClass(hiddenClass);
+  function navigation() {
+    var btnSender, curFrame, direction;
+    btnSender = event.target || this;
+    direction = (btnSender.id === 'js-btn-next') ? 1 : -1;
+    curFrame = parseInt($(btnSender).data('current-frame'));
+    nextFrame = parseInt(curFrame + direction);
+    $('.js-frame').addClass('hidden');
+    $('.js-frame').eq(nextFrame).removeClass('hidden');
+    $('.js-btn').data({currentFrame: nextFrame});
 
-    if (currentFrame < nextFrame){
-      $('#btn_next').attr('data-next-frame', +nextFrame + 1);
-      $('#btn_next').attr('data-current-frame', +nextFrame);
-      $('#btn_prev').attr('data-next-frame', currentFrame);
-      $('#btn_prev').attr('data-current-frame', nextFrame);
-    } else if (currentFrame > nextFrame){
-      $('#btn_prev').attr('data-next-frame', +nextFrame-1);
-      $('#btn_prev').attr('data-current-frame', nextFrame);
-      $('#btn_next').attr('data-next-frame', currentFrame);
-      $('#btn_next').attr('data-current-frame', nextFrame);
-    }
     selectAction(nextFrame);
   }
   
   // Функция решает какое действие делать при клике на кнопку навигации
-  function selectAction(nextFrame){
+  function selectAction(nextFrame) {
     switch (nextFrame){
       // Первое окно, ввод массива url
-      case "0": break ;
+      case 0: break ;
       // Второе окно, вывод превью
-      case "1": renderPreview(); break ;
+      case 1: getPreview(); break ;
       // Третье окно, вывод готового слайдера
-      case "2": createSlider(); break;
+      case 2: renderSlider(); break;
     }
   }
   
-  function renderPreview(){
-    var inputString, hasGeneratedPreview;
-    inputString = $('#urls').val();
-    hasGeneratedPreview = !!($('#frame_1 div').length);
-    if (hasGeneratedPreview){$('#frame_1 div').remove();}
-    preview = new Preview(inputString);
-    $('#frame_1').append(preview.generatePreview());
-    $('.js-comment-input').change(function(){ inputChange(this, preview); });
-    $('.js-slide-delete').click(function(){ toggleDeletedState(this, preview); });
+  function getPreview() {
+    var inputString, hasGeneratedPreview, parameters;
+    parameters = {
+      rawUrlString: $('#urls').val(),
+      $insertInto: $('#js-frame-1'),
+      $hbTemplate: $('#js-preview-template')
+    };
+    //hasGeneratedPreview = !!($('#js-frame-1 div').length);
+    //if (hasGeneratedPreview){ $('#js-frame-1 div').remove(); }
+    preview = new Preview(parameters);
+    preview.init();
+    preview.render();
+    // Клик по кнопке удалить на слайде внутри превью
+    $('#js-frame-1').on('click', '.js-slide-delete', preview.remove);
+    // Изменение текста внутри input'а слайда в превью
+    $('#js-frame-1').on('change', '.js-comment-input', preview.edit);
   }
   
-  // Изменение текста в textarea слайда, номер слайда через родителя, потом в объект Preview приделываем этот коммент
-  function inputChange(currentInput, preview){
-    var previewNumber, inputValue;
-    previewNumber = $(currentInput.parentNode.parentNode).attr('data-preview-number');
-    inputValue = $(currentInput).val();
-    preview.data.previews[previewNumber].comment = inputValue;
-  }
-  
-  // Удаление/восстановление слайдов
-  function toggleDeletedState(currentLink, preview)
-  {
-    var previewToDelete, number, isDeleted; 
-    previewToDelete = currentLink.parentNode;
-    previewNumber = $(previewToDelete).attr('data-preview-number');
-    
-    isDeleted = !!preview.data.previews[previewNumber].deleted;
-    if (isDeleted){
-      delete preview.data.previews[previewNumber].deleted;
+  function renderSlider() {
+    //if ($('.js-slider-wrapper div').length > 0){ $('.js-slider-wrapper').remove(); }
+
+    parameters = {
+      data: preview.save()
     }
-    else {
-      preview.data.previews[previewNumber].deleted = true;
-    }
-    
-    if (previewToDelete.classList.contains('disabled') == false){
-      if(confirm("вы действительно хотите удалить слайд?")){
-        previewToDelete.classList.add('disabled');
-        currentLink.textContent = 'Восстановить слайд';
-      }
-    }
-    else{
-      previewToDelete.classList.remove('disabled');
-      currentLink.textContent = 'Удалить';
-    }
-  }
-  
-  function createSlider(){
-    var appendTo;
-    if ($('.slider div').length > 0)
-      $('.slider').remove();
-      
-    slider = new Slider(preview, 'slider1');
-    appendTo = '#frame_2';
-    slider.generateSlider(appendTo);
-    slider.autoSlide();
+
+    //slider = new Slider(preview, '#js-slider-1');
+    //appendTo = '#js-frame-2';
+    //slider.generateSlider(appendTo);
+    //slider.autoSlide();
   }
 })();
 /*!
@@ -14769,13 +14731,52 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ ])
 });
 ;
-function Preview(rawUrlString) {
-  var self;
-  
+function Preview(params) {
+  var self, _paramObject, _hbObject, _data;
+  // params содержит в себе: 
+  // 1) .rawUrlString - введенные пользователем url
+  // 2) .$insertInto - куда должен в итоге вставиться элемент в методе render()
+  // 3) .$hbTemplate - указание на то, какой кусок handlebars надо использовать в качестве шаблона
+
   self = this;
   self = {
-    generatePreview : _generatePreview,
-    data : {previews : _getUrls(rawUrlString) }
+    init : _init,
+    render : _render,
+    edit : _edit,
+    remove : _remove,
+    save : _save
+  }
+
+  _params = params;
+
+  function _init() {
+    if (!_params) {
+      _params = {
+        rawUrlString: '',
+        $insertInto: $('#js-frame-1'),
+        $hbTemplate: $('#js-preview-template')
+      }
+    }
+    _data = _getUrls(_params.rawUrlString);
+    _hbObject = Handlebars.compile(_params.$hbTemplate.html());
+  }
+  function _render() {
+    _params.$insertInto.html(_hbObject(_data));
+  }
+  function _edit() {
+    var comment, index;
+    index = $(this).data('preview-number');
+    comment = $(this).val();
+    $(_data)[index].comment = comment;
+  }
+  function _remove() {
+    var index;
+    index = $(this).data('preview-number');
+    _data.splice(index,1);
+    self.render();
+  }
+  function _save() {
+    return _data;
   }
 
 
@@ -14788,24 +14789,18 @@ function Preview(rawUrlString) {
       });
     return urlArray;
     };
-  
-  // Генерим превью и возвращаем разметку
-  function _generatePreview(){
-    var previewHtml, previewTemplate;
-    previewHtml = $('#preview-template').html();
-    previewTemplate = Handlebars.compile(previewHtml);
-    return previewTemplate(self.data);
-    //$('#frame_1').append(previewTemplate(this.data));
-  } 
+
   return self; 
 }
 function Slider(previewObject, sliderTemplate){
   var interval;
   var self = this;
+  _initializeSliderVars();
+  _prepareSlider();
   //var slider, sliderWrapper, sliderImages;
   self = {
     generateSlider : _generateSlider,
-    toggleSlideByButton : _toggleSlideByButton,
+    toggleSlide : _toggleSlide,
     toggleSlideByBullet : _toggleSlideByBullet,
     data : _getSliderData(previewObject),
     autoSlide : _autoSlide
@@ -14814,100 +14809,71 @@ function Slider(previewObject, sliderTemplate){
   function _getSliderData(previewObject){
     var arrayToChange, readyData;
     arrayToChange = Array.from(previewObject.data.previews);
-    readyData = jQuery.grep(arrayToChange, function(cur){return !cur.deleted;})
-    console.log(readyData);
+    readyData = $.grep(arrayToChange, function(cur){return !cur.deleted;})
     return readyData;
   }
   
   function _generateSlider(appendTo){
     var template, slideShow, sliderHtml;
-    template = $('#'+sliderTemplate).html();
+    template = $(sliderTemplate).html();
     slideShow = Handlebars.compile(template);
     sliderHtml = slideShow(self);
-    console.log(self.data);
     $(appendTo).append(sliderHtml);
-    _initializeSliderVars(appendTo);
-    _prepareSlider();
   }
   
   function _prepareSlider(){
-    //console.log($(self.sliderImages).children('div:last-child'));
-    //console.log($(self.sliderImages).children('div').eq(1));
-    //$(self.sliderImages).children('div:last-child').clone().prependTo(self.sliderImages);
-    //$(self.sliderImages).children('div').eq(1).clone().appendTo(self.sliderImages);
-    $(self.sliderNav).bind('click', self.toggleSlideByButton);
-    $(self.sliderNav).hover(function() { _stopAutoSlide(); }, _autoSlide);
-    $(self.sliderBullets).find('li').bind('click', self.toggleSlideByBullet);
-    $(self.sliderBullets).find('li').eq(0).addClass('active');
-    $(self.sliderBullets).hover(function() { _stopAutoSlide(); }, _autoSlide);
+    $(self.$sliderNav).click(self.toggleSlide);
+    self.$sliderNav.hover(function() { _stopAutoSlide(); }, _autoSlide);
+    $(self.$sliderBullets).click(self.toggleSlide);
+    self.$sliderBullets.eq(0).addClass('active');
+    self.$sliderBullets.hover(function() { _stopAutoSlide(); }, _autoSlide);
   }
   
-  function _initializeSliderVars(appendTo){
-    self.sliderFrame = $(appendTo);
-    self.sliderWrapper = $(self.sliderFrame).find('.js-slider-wrapper');
-    self.sliderImages = $(self.sliderFrame).find('.js-slider-images');
-    self.sliderBullets = $(self.sliderFrame).find('.js-slider-bullets');
-    self.sliderNav = $(self.sliderFrame).find('.js-slider-nav');
+  function _initializeSliderVars(){
+    self.$sliderFrame = $('#js-frame-2');
+    self.$sliderWrapper = self.$sliderFrame.find('.js-slider-wrapper');
+    self.$sliderImages = self.$sliderFrame.find('.js-slider-images');
+    self.$sliderBullets = self.$sliderFrame.find('.js-slider-bullets').children('li');
+    self.$sliderNav = self.$sliderFrame.find('.js-slider-nav');
     self.currentSlide = 0;
     self.direction = -1;
-    self.slideWidth = $(self.sliderWrapper).width();
-    self.slideCount = $(self.sliderImages).children('div').length;
+    self.slideWidth = self.$sliderWrapper.width();
+    self.slideCount = self.$sliderImages.children('div').length;
     self.currentMargin = 0;
   }
   
-  function _toggleSlideByButton(){
-    var currentButton, direction, nextMargin;
-    currentButton = this;
-    if ($(currentButton).hasClass('js-slider-nav')){
-      self.direction = parseInt($(currentButton).attr('data-direction'));
-    }
-    else {
-      self.direction = -1;
-    }
+  function _toggleSlide(){
+    
     self.currentMargin = self.currentMargin + (self.direction * self.slideWidth); 
 
     //Переключаем слайд
-    $(self.sliderImages).css('margin-left', self.currentMargin);
-
+    $(self.$sliderImages).css('margin-left', self.currentMargin);
 
     // Текущий слайд
     self.currentSlide = self.currentSlide - +self.direction;
 
-    console.log(self.currentSlide);
-
-    // Случаи, когда слайд последний или первый
-    if (+self.currentSlide == +self.slideCount){
-      console.log(self.currentSlide);
-      self.currentSlide = 0;
-      console.log(self.currentSlide);
-      _circleIt();
-    } else if (+self.currentSlide < 0) {
-      console.log(self.currentSlide);
-      self.currentSlide = self.slideCount-1;
-      _circleIt();
-    }
-
     // Подсветим нужный буллет
-    $(self.sliderBullets).find('li').removeClass('active');
-    $(self.sliderBullets).find('li').eq(self.currentSlide).addClass('active');  
+    self.$sliderBullets.removeClass('active');
+    self.$sliderBullets.eq(self.currentSlide).addClass('active');  
   }
   
   // Переключение через буллеты
   function _toggleSlideByBullet(){
     var currentBullet, slideNumber, slideMargin;
     currentBullet = this;
-    slideNumber =  $(currentBullet).attr('data-slide-number');
+    console.log(typeof(this));
+    slideNumber =  $(currentBullet).data('slide-number');
     slideMargin = -(self.slideWidth * slideNumber);
     self.currentMargin = slideMargin;
-    $(self.sliderImages).css('margin-left', self.currentMargin);    
+    self.$sliderImages.css('margin-left', self.currentMargin);    
     self.currentSlide = slideNumber;
-    $(self.sliderBullets).find('li').removeClass('active');
-    $(self.sliderBullets).find('li').eq(+slideNumber).addClass('active');
+    self.$sliderBullets.removeClass('active');
+    self.$sliderBullets.eq(+slideNumber).addClass('active');
   }
   
   // Автопрокрутка слайдера
   function _autoSlide(){
-    interval = setInterval(function(){ self.direction = -1 ; _toggleSlideByButton(); }, 5000);
+    interval = setInterval(function(){ self.direction = -1 ; _toggleSlide(); }, 5000);
   }
   // Остановим autoslide когда у нас hover
   function _stopAutoSlide(){      
@@ -14917,7 +14883,7 @@ function Slider(previewObject, sliderTemplate){
   // Функция перемещающая слайды на начало или на конец, если мы нажали мы попытались переместиться за границы wrapper'a слайдов
   function _circleIt(){
     neededMargin = -(self.slideWidth * self.currentSlide);
-    $(self.sliderImages).css('margin-left', neededMargin);
+    self.$sliderImages.css('margin-left', neededMargin);
     self.currentMargin = neededMargin;
   }
 

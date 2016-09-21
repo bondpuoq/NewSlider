@@ -1,10 +1,12 @@
 function Slider(previewObject, sliderTemplate){
   var interval;
   var self = this;
+  _initializeSliderVars();
+  _prepareSlider();
   //var slider, sliderWrapper, sliderImages;
   self = {
     generateSlider : _generateSlider,
-    toggleSlideByButton : _toggleSlideByButton,
+    toggleSlide : _toggleSlide,
     toggleSlideByBullet : _toggleSlideByBullet,
     data : _getSliderData(previewObject),
     autoSlide : _autoSlide
@@ -13,100 +15,71 @@ function Slider(previewObject, sliderTemplate){
   function _getSliderData(previewObject){
     var arrayToChange, readyData;
     arrayToChange = Array.from(previewObject.data.previews);
-    readyData = jQuery.grep(arrayToChange, function(cur){return !cur.deleted;})
-    console.log(readyData);
+    readyData = $.grep(arrayToChange, function(cur){return !cur.deleted;})
     return readyData;
   }
   
   function _generateSlider(appendTo){
     var template, slideShow, sliderHtml;
-    template = $('#'+sliderTemplate).html();
+    template = $(sliderTemplate).html();
     slideShow = Handlebars.compile(template);
     sliderHtml = slideShow(self);
-    console.log(self.data);
     $(appendTo).append(sliderHtml);
-    _initializeSliderVars(appendTo);
-    _prepareSlider();
   }
   
   function _prepareSlider(){
-    //console.log($(self.sliderImages).children('div:last-child'));
-    //console.log($(self.sliderImages).children('div').eq(1));
-    //$(self.sliderImages).children('div:last-child').clone().prependTo(self.sliderImages);
-    //$(self.sliderImages).children('div').eq(1).clone().appendTo(self.sliderImages);
-    $(self.sliderNav).bind('click', self.toggleSlideByButton);
-    $(self.sliderNav).hover(function() { _stopAutoSlide(); }, _autoSlide);
-    $(self.sliderBullets).find('li').bind('click', self.toggleSlideByBullet);
-    $(self.sliderBullets).find('li').eq(0).addClass('active');
-    $(self.sliderBullets).hover(function() { _stopAutoSlide(); }, _autoSlide);
+    $(self.$sliderNav).click(self.toggleSlide);
+    self.$sliderNav.hover(function() { _stopAutoSlide(); }, _autoSlide);
+    $(self.$sliderBullets).click(self.toggleSlide);
+    self.$sliderBullets.eq(0).addClass('active');
+    self.$sliderBullets.hover(function() { _stopAutoSlide(); }, _autoSlide);
   }
   
-  function _initializeSliderVars(appendTo){
-    self.sliderFrame = $(appendTo);
-    self.sliderWrapper = $(self.sliderFrame).find('.js-slider-wrapper');
-    self.sliderImages = $(self.sliderFrame).find('.js-slider-images');
-    self.sliderBullets = $(self.sliderFrame).find('.js-slider-bullets');
-    self.sliderNav = $(self.sliderFrame).find('.js-slider-nav');
+  function _initializeSliderVars(){
+    self.$sliderFrame = $('#js-frame-2');
+    self.$sliderWrapper = self.$sliderFrame.find('.js-slider-wrapper');
+    self.$sliderImages = self.$sliderFrame.find('.js-slider-images');
+    self.$sliderBullets = self.$sliderFrame.find('.js-slider-bullets').children('li');
+    self.$sliderNav = self.$sliderFrame.find('.js-slider-nav');
     self.currentSlide = 0;
     self.direction = -1;
-    self.slideWidth = $(self.sliderWrapper).width();
-    self.slideCount = $(self.sliderImages).children('div').length;
+    self.slideWidth = self.$sliderWrapper.width();
+    self.slideCount = self.$sliderImages.children('div').length;
     self.currentMargin = 0;
   }
   
-  function _toggleSlideByButton(){
-    var currentButton, direction, nextMargin;
-    currentButton = this;
-    if ($(currentButton).hasClass('js-slider-nav')){
-      self.direction = parseInt($(currentButton).attr('data-direction'));
-    }
-    else {
-      self.direction = -1;
-    }
+  function _toggleSlide(){
+    
     self.currentMargin = self.currentMargin + (self.direction * self.slideWidth); 
 
     //Переключаем слайд
-    $(self.sliderImages).css('margin-left', self.currentMargin);
-
+    $(self.$sliderImages).css('margin-left', self.currentMargin);
 
     // Текущий слайд
     self.currentSlide = self.currentSlide - +self.direction;
 
-    console.log(self.currentSlide);
-
-    // Случаи, когда слайд последний или первый
-    if (+self.currentSlide == +self.slideCount){
-      console.log(self.currentSlide);
-      self.currentSlide = 0;
-      console.log(self.currentSlide);
-      _circleIt();
-    } else if (+self.currentSlide < 0) {
-      console.log(self.currentSlide);
-      self.currentSlide = self.slideCount-1;
-      _circleIt();
-    }
-
     // Подсветим нужный буллет
-    $(self.sliderBullets).find('li').removeClass('active');
-    $(self.sliderBullets).find('li').eq(self.currentSlide).addClass('active');  
+    self.$sliderBullets.removeClass('active');
+    self.$sliderBullets.eq(self.currentSlide).addClass('active');  
   }
   
   // Переключение через буллеты
   function _toggleSlideByBullet(){
     var currentBullet, slideNumber, slideMargin;
     currentBullet = this;
-    slideNumber =  $(currentBullet).attr('data-slide-number');
+    console.log(typeof(this));
+    slideNumber =  $(currentBullet).data('slide-number');
     slideMargin = -(self.slideWidth * slideNumber);
     self.currentMargin = slideMargin;
-    $(self.sliderImages).css('margin-left', self.currentMargin);    
+    self.$sliderImages.css('margin-left', self.currentMargin);    
     self.currentSlide = slideNumber;
-    $(self.sliderBullets).find('li').removeClass('active');
-    $(self.sliderBullets).find('li').eq(+slideNumber).addClass('active');
+    self.$sliderBullets.removeClass('active');
+    self.$sliderBullets.eq(+slideNumber).addClass('active');
   }
   
   // Автопрокрутка слайдера
   function _autoSlide(){
-    interval = setInterval(function(){ self.direction = -1 ; _toggleSlideByButton(); }, 5000);
+    interval = setInterval(function(){ self.direction = -1 ; _toggleSlide(); }, 5000);
   }
   // Остановим autoslide когда у нас hover
   function _stopAutoSlide(){      
@@ -116,7 +89,7 @@ function Slider(previewObject, sliderTemplate){
   // Функция перемещающая слайды на начало или на конец, если мы нажали мы попытались переместиться за границы wrapper'a слайдов
   function _circleIt(){
     neededMargin = -(self.slideWidth * self.currentSlide);
-    $(self.sliderImages).css('margin-left', neededMargin);
+    self.$sliderImages.css('margin-left', neededMargin);
     self.currentMargin = neededMargin;
   }
 
