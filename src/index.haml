@@ -38,7 +38,6 @@
           %ul.bullets.js-slider-bullets
             {{#each this}}
               {{#if @index}}
-              <!-- Так как элемент с индексом = 0 преобразуется к false, мы используем это, чтобы назначить активный буллет -->
               %li{data-slide-number:"{{@index}}"}
               {{else}}
               %li.active{data-slide-number:"{{@index}}"}

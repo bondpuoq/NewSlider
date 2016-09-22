@@ -1,5 +1,5 @@
 function Slider(params){
-  var interval, _params, _data, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide, _slideCount;
+  var interval, _params, _data, _hbTemplate, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide, _slideCount;
   var self = this;
 
   self = {
@@ -10,16 +10,19 @@ function Slider(params){
     stopAutoSlide : _stopAutoSlide
   }
 
-  _params = params;
+  
 
-  function _init() {
+  function _init(params) {
+    _params = params;
     _data = _params.data;
     _currentSlide = 0;
-    _hbObject = Handlebars.compile(_params.$hbTemplate.html());
+    _hbTemplate = _hbTemplate || _params.$hbTemplate.html();
+    _hbObject = Handlebars.compile(_hbTemplate);
   }
 
   function _render() {
     _params.$insertInto.html(_hbObject(_data));
+    //$(_hbObject(_data)).appendTo(_params.$insertInto);
     _$sliderImages = $('.js-slider-images').eq(0);
     _slideWidth = _$sliderImages.children('div').width();
     _$sliderBullets = $('.js-slider-bullets>li');

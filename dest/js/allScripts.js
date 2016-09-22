@@ -10061,10 +10061,9 @@ return jQuery;
 
 'use strict';
 (function(){
+  var preview, slider;
   // Клик по кнопке навигации (вперед/назад)
   $('body').on('click','.js-btn', navigation);
-  
-  var frames, preview, slider;
 
   // Навигация по кнопкам "Вперед" и "Назад"
   function navigation() {
@@ -10074,22 +10073,22 @@ return jQuery;
     curFrame = parseInt($(btnSender).data('current-frame'));
     nextFrame = parseInt(curFrame + direction);
 
-    selectAction(nextFrame);
-
     $('.js-frame').addClass('hidden');
     $('.js-frame').eq(nextFrame).removeClass('hidden');
     $('.js-btn').data({currentFrame: nextFrame});
+
+    selectAction(nextFrame);
   }
   
   // Функция решает какое действие делать при клике на кнопку навигации
   function selectAction(nextFrame) {
     switch (nextFrame) {
       // Первое окно, ввод массива url
-      case 0: break ;
+      case 0: { break; }
       // Второе окно, вывод превью
-      case 1: getPreview(); break ;
+      case 1: { getPreview(); break; }
       // Третье окно, вывод готового слайдера
-      case 2: getSlider(); break;
+      case 2: { getSlider(); break; }
     }
   }
   
@@ -10100,8 +10099,11 @@ return jQuery;
       $insertInto: $('#js-frame-1'),
       $hbTemplate: $('#js-preview-template')
     };
-    preview = new Preview(parameters);
-    preview.init();
+
+    if (!preview) {
+      preview = new Preview();
+    }
+    preview.init(parameters); 
     preview.render();
     // Клик по кнопке удалить на слайде внутри превью
     $('#js-frame-1').on('click', '.js-slide-delete', preview.remove);
@@ -10110,16 +10112,15 @@ return jQuery;
   }
   
   function getSlider() {
-    //if ($('.js-slider-wrapper div').length > 0){ $('.js-slider-wrapper').remove(); }
-
     parameters = {
       data: preview.save(),
       $insertInto: $('#js-frame-2'),
       $hbTemplate: $('#js-slider-template')
     }
-    
-    slider = new Slider(parameters);
-    slider.init();
+    if (!slider) {
+      slider = new Slider();
+    }
+    slider.init(parameters);
     slider.render();
     slider.autoSlide();
 
@@ -14740,8 +14741,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ ])
 });
 ;
-function Preview(params) {
-  var self, _params, _hbObject, _data;
+function Preview() {
+  var self, _params, _hbTemplate, _hbObject, _data;
   // params содержит в себе: 
   // 1) .rawUrlString - введенные пользователем url
   // 2) .$insertInto - куда должен в итоге вставиться элемент в методе render()
@@ -14756,9 +14757,8 @@ function Preview(params) {
     save : _save
   }
 
-  _params = params;
-
-  function _init() {
+  function _init(params) {
+    _params = params;
     if (!_params) {
       _params = {
         rawUrlString: '',
@@ -14766,18 +14766,20 @@ function Preview(params) {
         $hbTemplate: $('#js-preview-template')
       }
     }
-
     _data = _getUrls(_params.rawUrlString);
-    _hbObject = Handlebars.compile(_params.$hbTemplate.html()); 
+    _hbTemplate = _hbTemplate || _params.$hbTemplate.html();
+    _hbObject = Handlebars.compile(_hbTemplate); 
   }
   function _render() {
     _params.$insertInto.html(_hbObject(_data));
+    //$(_hbObject(_data)).appendTo(_params.$insertInto);
   }
   function _edit() {
     var comment, index;
     index = $(this).data('preview-number');
     comment = $(this).val();
     $(_data)[index].comment = comment;
+    self.render();
   }
   function _remove() {
     var index;
@@ -14786,6 +14788,7 @@ function Preview(params) {
     self.render();
   }
   function _save() {
+    self.render();
     return _data;
   }
 
@@ -14803,7 +14806,7 @@ function Preview(params) {
   return self; 
 }
 function Slider(params){
-  var interval, _params, _data, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide, _slideCount;
+  var interval, _params, _data, _hbTemplate, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide, _slideCount;
   var self = this;
 
   self = {
@@ -14814,16 +14817,19 @@ function Slider(params){
     stopAutoSlide : _stopAutoSlide
   }
 
-  _params = params;
+  
 
-  function _init() {
+  function _init(params) {
+    _params = params;
     _data = _params.data;
     _currentSlide = 0;
-    _hbObject = Handlebars.compile(_params.$hbTemplate.html());
+    _hbTemplate = _hbTemplate || _params.$hbTemplate.html();
+    _hbObject = Handlebars.compile(_hbTemplate);
   }
 
   function _render() {
     _params.$insertInto.html(_hbObject(_data));
+    //$(_hbObject(_data)).appendTo(_params.$insertInto);
     _$sliderImages = $('.js-slider-images').eq(0);
     _slideWidth = _$sliderImages.children('div').width();
     _$sliderBullets = $('.js-slider-bullets>li');

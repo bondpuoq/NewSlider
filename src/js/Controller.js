@@ -1,9 +1,8 @@
 'use strict';
 (function(){
+  var preview, slider;
   // Клик по кнопке навигации (вперед/назад)
   $('body').on('click','.js-btn', navigation);
-  
-  var frames, preview, slider;
 
   // Навигация по кнопкам "Вперед" и "Назад"
   function navigation() {
@@ -13,22 +12,22 @@
     curFrame = parseInt($(btnSender).data('current-frame'));
     nextFrame = parseInt(curFrame + direction);
 
-    selectAction(nextFrame);
-
     $('.js-frame').addClass('hidden');
     $('.js-frame').eq(nextFrame).removeClass('hidden');
     $('.js-btn').data({currentFrame: nextFrame});
+
+    selectAction(nextFrame);
   }
   
   // Функция решает какое действие делать при клике на кнопку навигации
   function selectAction(nextFrame) {
     switch (nextFrame) {
       // Первое окно, ввод массива url
-      case 0: break ;
+      case 0: { break; }
       // Второе окно, вывод превью
-      case 1: getPreview(); break ;
+      case 1: { getPreview(); break; }
       // Третье окно, вывод готового слайдера
-      case 2: getSlider(); break;
+      case 2: { getSlider(); break; }
     }
   }
   
@@ -39,8 +38,11 @@
       $insertInto: $('#js-frame-1'),
       $hbTemplate: $('#js-preview-template')
     };
-    preview = new Preview(parameters);
-    preview.init();
+
+    if (!preview) {
+      preview = new Preview();
+    }
+    preview.init(parameters); 
     preview.render();
     // Клик по кнопке удалить на слайде внутри превью
     $('#js-frame-1').on('click', '.js-slide-delete', preview.remove);
@@ -49,16 +51,15 @@
   }
   
   function getSlider() {
-    //if ($('.js-slider-wrapper div').length > 0){ $('.js-slider-wrapper').remove(); }
-
     parameters = {
       data: preview.save(),
       $insertInto: $('#js-frame-2'),
       $hbTemplate: $('#js-slider-template')
     }
-    
-    slider = new Slider(parameters);
-    slider.init();
+    if (!slider) {
+      slider = new Slider();
+    }
+    slider.init(parameters);
     slider.render();
     slider.autoSlide();
 

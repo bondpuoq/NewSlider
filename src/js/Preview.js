@@ -1,5 +1,5 @@
-function Preview(params) {
-  var self, _params, _hbObject, _data;
+function Preview() {
+  var self, _params, _hbTemplate, _hbObject, _data;
   // params содержит в себе: 
   // 1) .rawUrlString - введенные пользователем url
   // 2) .$insertInto - куда должен в итоге вставиться элемент в методе render()
@@ -14,9 +14,8 @@ function Preview(params) {
     save : _save
   }
 
-  _params = params;
-
-  function _init() {
+  function _init(params) {
+    _params = params;
     if (!_params) {
       _params = {
         rawUrlString: '',
@@ -24,18 +23,20 @@ function Preview(params) {
         $hbTemplate: $('#js-preview-template')
       }
     }
-
     _data = _getUrls(_params.rawUrlString);
-    _hbObject = Handlebars.compile(_params.$hbTemplate.html()); 
+    _hbTemplate = _hbTemplate || _params.$hbTemplate.html();
+    _hbObject = Handlebars.compile(_hbTemplate); 
   }
   function _render() {
     _params.$insertInto.html(_hbObject(_data));
+    //$(_hbObject(_data)).appendTo(_params.$insertInto);
   }
   function _edit() {
     var comment, index;
     index = $(this).data('preview-number');
     comment = $(this).val();
     $(_data)[index].comment = comment;
+    self.render();
   }
   function _remove() {
     var index;
@@ -44,6 +45,7 @@ function Preview(params) {
     self.render();
   }
   function _save() {
+    self.render();
     return _data;
   }
 
