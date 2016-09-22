@@ -55,12 +55,6 @@ function Preview(params) {
       .map(function(current) {
         return {number: i++, src: current.trim().replace("\"","")}
       });
-    // Выбрасывание ошибки, если пользователь ввел битые Url
-    if (urlArray.length === 1) {
-      var img = new Image();
-      img.src = urlArray[0];
-      img.onerror = (function(){throw {name:'fuck', message: 'shit'}})();
-    }
     return urlArray;
     };
 

@@ -1,7 +1,7 @@
 !!! 5
 %html
   %head
-    %meta{type : "content", charset : "utf8"}
+    %meta{charset : "utf8"}
     %link{rel : "stylesheet", href : "css/style.css"}
     %title Это новая версия слайдера, йоу!
   %body
@@ -46,7 +46,6 @@
             {{/each}}
           %div.prev.js-slider-nav{data-nav-direction: "-1"}
           %div.next.js-slider-nav{data-nav-direction: "1"}
-    %div#error_line.js-error.hidden
     %div.button.js-btn.js-hidden{id:"js-btn-prev", data-current-frame: "0"}
       Назад
     %div.button.js-btn{id:"js-btn-next", data-current-frame: "0"}

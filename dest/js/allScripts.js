@@ -10064,9 +10064,7 @@ return jQuery;
   // Клик по кнопке навигации (вперед/назад)
   $('body').on('click','.js-btn', navigation);
   
-  var frames, preview, slider, $errorDiv;
-
-  $errorDiv = $('.js-error');
+  var frames, preview, slider;
 
   // Навигация по кнопкам "Вперед" и "Назад"
   function navigation() {
@@ -10085,7 +10083,7 @@ return jQuery;
   
   // Функция решает какое действие делать при клике на кнопку навигации
   function selectAction(nextFrame) {
-    switch (nextFrame){
+    switch (nextFrame) {
       // Первое окно, ввод массива url
       case 0: break ;
       // Второе окно, вывод превью
@@ -10102,8 +10100,6 @@ return jQuery;
       $insertInto: $('#js-frame-1'),
       $hbTemplate: $('#js-preview-template')
     };
-    //hasGeneratedPreview = !!($('#js-frame-1 div').length);
-    //if (hasGeneratedPreview){ $('#js-frame-1 div').remove(); }
     preview = new Preview(parameters);
     preview.init();
     preview.render();
@@ -10134,11 +10130,6 @@ return jQuery;
     $('#js-frame-2').on('mouseleave', '.js-slider-nav', slider.autoSlide);
     $('#js-frame-2').on('mouseenter', '.js-slider-bullets', slider.stopAutoSlide);
     $('#js-frame-2').on('mouseleave', '.js-slider-bullets', slider.autoSlide);
-
-    //slider = new Slider(preview, '#js-slider-1');
-    //appendTo = '#js-frame-2';
-    //slider.generateSlider(appendTo);
-    //slider.autoSlide();
   }
 })();
 /*!
@@ -14806,19 +14797,13 @@ function Preview(params) {
       .map(function(current) {
         return {number: i++, src: current.trim().replace("\"","")}
       });
-    // Выбрасывание ошибки, если пользователь ввел битые Url
-    if (urlArray.length === 1) {
-      var img = new Image();
-      img.src = urlArray[0];
-      img.onerror = (function(){throw {name:'fuck', message: 'shit'}})();
-    }
     return urlArray;
     };
 
   return self; 
 }
 function Slider(params){
-  var interval, _params, _data, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide;
+  var interval, _params, _data, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide, _slideCount;
   var self = this;
 
   self = {
@@ -14831,23 +14816,21 @@ function Slider(params){
 
   _params = params;
 
-  function _init()
-  {
+  function _init() {
     _data = _params.data;
     _currentSlide = 0;
     _hbObject = Handlebars.compile(_params.$hbTemplate.html());
   }
 
-  function _render()
-  {
+  function _render() {
     _params.$insertInto.html(_hbObject(_data));
     _$sliderImages = $('.js-slider-images').eq(0);
     _slideWidth = _$sliderImages.children('div').width();
     _$sliderBullets = $('.js-slider-bullets>li');
+    _slideCount = $('.js-slider-images>div').length;
   }
   
-  function _move()
-  {
+  function _move() {
     var srcData, $sender, nextSlide;
     $sender = $(this);
     srcData = $sender.data();
@@ -14856,17 +14839,24 @@ function Slider(params){
     // Если не LI, тогда возможно это сработала автопрокрутка, - значит надо направление указать, куда мотать, 
     // Либо нажата кнопка вперед/назад, тогда напавление само сработает
     nextSlide = $sender.prop('nodeName') == 'LI' ? srcData.slideNumber : (_currentSlide + (parseInt(srcData.navDirection) || 1));
+    if (nextSlide == _slideCount) {
+      _$sliderImages.css({ transition:0 });
+      nextSlide = 0;
+    } else if (nextSlide == -1) {
+      _$sliderImages.css({ transition:0 });
+      nextSlide = _slideCount - 1;
+    }
     _$sliderImages.css({ marginLeft: -_slideWidth * nextSlide });
     _currentSlide = nextSlide;
     _$sliderBullets.removeClass('active').eq(_currentSlide).addClass('active');
   }
   
   // Автопрокрутка слайдера
-  function _autoSlide(){
+  function _autoSlide() {
     interval = setInterval(function(){ _move() }, 5000);
   }
   // Остановим autoslide когда у нас hover
-  function _stopAutoSlide(){
+  function _stopAutoSlide() {
     window.clearInterval(interval);
   }
 

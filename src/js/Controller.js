@@ -3,9 +3,7 @@
   // Клик по кнопке навигации (вперед/назад)
   $('body').on('click','.js-btn', navigation);
   
-  var frames, preview, slider, $errorDiv;
-
-  $errorDiv = $('.js-error');
+  var frames, preview, slider;
 
   // Навигация по кнопкам "Вперед" и "Назад"
   function navigation() {
@@ -24,7 +22,7 @@
   
   // Функция решает какое действие делать при клике на кнопку навигации
   function selectAction(nextFrame) {
-    switch (nextFrame){
+    switch (nextFrame) {
       // Первое окно, ввод массива url
       case 0: break ;
       // Второе окно, вывод превью
@@ -41,8 +39,6 @@
       $insertInto: $('#js-frame-1'),
       $hbTemplate: $('#js-preview-template')
     };
-    //hasGeneratedPreview = !!($('#js-frame-1 div').length);
-    //if (hasGeneratedPreview){ $('#js-frame-1 div').remove(); }
     preview = new Preview(parameters);
     preview.init();
     preview.render();
@@ -73,10 +69,5 @@
     $('#js-frame-2').on('mouseleave', '.js-slider-nav', slider.autoSlide);
     $('#js-frame-2').on('mouseenter', '.js-slider-bullets', slider.stopAutoSlide);
     $('#js-frame-2').on('mouseleave', '.js-slider-bullets', slider.autoSlide);
-
-    //slider = new Slider(preview, '#js-slider-1');
-    //appendTo = '#js-frame-2';
-    //slider.generateSlider(appendTo);
-    //slider.autoSlide();
   }
 })();
