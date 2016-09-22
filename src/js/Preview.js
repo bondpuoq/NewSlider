@@ -45,7 +45,6 @@ function Preview() {
     self.render();
   }
   function _save() {
-    self.render();
     return _data;
   }
 
