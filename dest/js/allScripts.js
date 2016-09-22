@@ -10061,11 +10061,13 @@ return jQuery;
 
 'use strict';
 (function(){
-  var preview;
   // Клик по кнопке навигации (вперед/назад)
   $('body').on('click','.js-btn', navigation);
   
-  var frames, preview, slider;
+  var frames, preview, slider, $errorDiv;
+
+  $errorDiv = $('.js-error');
+
   // Навигация по кнопкам "Вперед" и "Назад"
   function navigation() {
     var btnSender, curFrame, direction;
@@ -10073,11 +10075,12 @@ return jQuery;
     direction = (btnSender.id === 'js-btn-next') ? 1 : -1;
     curFrame = parseInt($(btnSender).data('current-frame'));
     nextFrame = parseInt(curFrame + direction);
+
+    selectAction(nextFrame);
+
     $('.js-frame').addClass('hidden');
     $('.js-frame').eq(nextFrame).removeClass('hidden');
     $('.js-btn').data({currentFrame: nextFrame});
-
-    selectAction(nextFrame);
   }
   
   // Функция решает какое действие делать при клике на кнопку навигации
@@ -10088,7 +10091,7 @@ return jQuery;
       // Второе окно, вывод превью
       case 1: getPreview(); break ;
       // Третье окно, вывод готового слайдера
-      case 2: renderSlider(); break;
+      case 2: getSlider(); break;
     }
   }
   
@@ -10110,12 +10113,27 @@ return jQuery;
     $('#js-frame-1').on('change', '.js-comment-input', preview.edit);
   }
   
-  function renderSlider() {
+  function getSlider() {
     //if ($('.js-slider-wrapper div').length > 0){ $('.js-slider-wrapper').remove(); }
 
     parameters = {
-      data: preview.save()
+      data: preview.save(),
+      $insertInto: $('#js-frame-2'),
+      $hbTemplate: $('#js-slider-template')
     }
+    
+    slider = new Slider(parameters);
+    slider.init();
+    slider.render();
+    slider.autoSlide();
+
+    // Клик по кнопке удалить на слайде внутри превью
+    $('#js-frame-2').on('click', '.js-slider-nav', slider.move);
+    $('#js-frame-2').on('click', '.js-slider-bullets li', slider.move);
+    $('#js-frame-2').on('mouseenter', '.js-slider-nav', slider.stopAutoSlide);
+    $('#js-frame-2').on('mouseleave', '.js-slider-nav', slider.autoSlide);
+    $('#js-frame-2').on('mouseenter', '.js-slider-bullets', slider.stopAutoSlide);
+    $('#js-frame-2').on('mouseleave', '.js-slider-bullets', slider.autoSlide);
 
     //slider = new Slider(preview, '#js-slider-1');
     //appendTo = '#js-frame-2';
@@ -14732,7 +14750,7 @@ return /******/ (function(modules) { // webpackBootstrap
 });
 ;
 function Preview(params) {
-  var self, _paramObject, _hbObject, _data;
+  var self, _params, _hbObject, _data;
   // params содержит в себе: 
   // 1) .rawUrlString - введенные пользователем url
   // 2) .$insertInto - куда должен в итоге вставиться элемент в методе render()
@@ -14757,8 +14775,9 @@ function Preview(params) {
         $hbTemplate: $('#js-preview-template')
       }
     }
+
     _data = _getUrls(_params.rawUrlString);
-    _hbObject = Handlebars.compile(_params.$hbTemplate.html());
+    _hbObject = Handlebars.compile(_params.$hbTemplate.html()); 
   }
   function _render() {
     _params.$insertInto.html(_hbObject(_data));
@@ -14781,112 +14800,75 @@ function Preview(params) {
 
 
   // Делаем массив url'ов из введенной пользователем строки
-  function _getUrls(rawUrlString){
+  function _getUrls(rawUrlString) {
     var i = 0, urlArray;
     urlArray = rawUrlString.split(",")
-      .map(function(current){
+      .map(function(current) {
         return {number: i++, src: current.trim().replace("\"","")}
       });
+    // Выбрасывание ошибки, если пользователь ввел битые Url
+    if (urlArray.length === 1) {
+      var img = new Image();
+      img.src = urlArray[0];
+      img.onerror = (function(){throw {name:'fuck', message: 'shit'}})();
+    }
     return urlArray;
     };
 
   return self; 
 }
-function Slider(previewObject, sliderTemplate){
-  var interval;
+function Slider(params){
+  var interval, _params, _data, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide;
   var self = this;
-  _initializeSliderVars();
-  _prepareSlider();
-  //var slider, sliderWrapper, sliderImages;
+
   self = {
-    generateSlider : _generateSlider,
-    toggleSlide : _toggleSlide,
-    toggleSlideByBullet : _toggleSlideByBullet,
-    data : _getSliderData(previewObject),
-    autoSlide : _autoSlide
+    init : _init,
+    render : _render,
+    move : _move,
+    autoSlide : _autoSlide,
+    stopAutoSlide : _stopAutoSlide
   }
-  
-  function _getSliderData(previewObject){
-    var arrayToChange, readyData;
-    arrayToChange = Array.from(previewObject.data.previews);
-    readyData = $.grep(arrayToChange, function(cur){return !cur.deleted;})
-    return readyData;
-  }
-  
-  function _generateSlider(appendTo){
-    var template, slideShow, sliderHtml;
-    template = $(sliderTemplate).html();
-    slideShow = Handlebars.compile(template);
-    sliderHtml = slideShow(self);
-    $(appendTo).append(sliderHtml);
-  }
-  
-  function _prepareSlider(){
-    $(self.$sliderNav).click(self.toggleSlide);
-    self.$sliderNav.hover(function() { _stopAutoSlide(); }, _autoSlide);
-    $(self.$sliderBullets).click(self.toggleSlide);
-    self.$sliderBullets.eq(0).addClass('active');
-    self.$sliderBullets.hover(function() { _stopAutoSlide(); }, _autoSlide);
-  }
-  
-  function _initializeSliderVars(){
-    self.$sliderFrame = $('#js-frame-2');
-    self.$sliderWrapper = self.$sliderFrame.find('.js-slider-wrapper');
-    self.$sliderImages = self.$sliderFrame.find('.js-slider-images');
-    self.$sliderBullets = self.$sliderFrame.find('.js-slider-bullets').children('li');
-    self.$sliderNav = self.$sliderFrame.find('.js-slider-nav');
-    self.currentSlide = 0;
-    self.direction = -1;
-    self.slideWidth = self.$sliderWrapper.width();
-    self.slideCount = self.$sliderImages.children('div').length;
-    self.currentMargin = 0;
-  }
-  
-  function _toggleSlide(){
-    
-    self.currentMargin = self.currentMargin + (self.direction * self.slideWidth); 
 
-    //Переключаем слайд
-    $(self.$sliderImages).css('margin-left', self.currentMargin);
+  _params = params;
 
-    // Текущий слайд
-    self.currentSlide = self.currentSlide - +self.direction;
+  function _init()
+  {
+    _data = _params.data;
+    _currentSlide = 0;
+    _hbObject = Handlebars.compile(_params.$hbTemplate.html());
+  }
 
-    // Подсветим нужный буллет
-    self.$sliderBullets.removeClass('active');
-    self.$sliderBullets.eq(self.currentSlide).addClass('active');  
+  function _render()
+  {
+    _params.$insertInto.html(_hbObject(_data));
+    _$sliderImages = $('.js-slider-images').eq(0);
+    _slideWidth = _$sliderImages.children('div').width();
+    _$sliderBullets = $('.js-slider-bullets>li');
   }
   
-  // Переключение через буллеты
-  function _toggleSlideByBullet(){
-    var currentBullet, slideNumber, slideMargin;
-    currentBullet = this;
-    console.log(typeof(this));
-    slideNumber =  $(currentBullet).data('slide-number');
-    slideMargin = -(self.slideWidth * slideNumber);
-    self.currentMargin = slideMargin;
-    self.$sliderImages.css('margin-left', self.currentMargin);    
-    self.currentSlide = slideNumber;
-    self.$sliderBullets.removeClass('active');
-    self.$sliderBullets.eq(+slideNumber).addClass('active');
+  function _move()
+  {
+    var srcData, $sender, nextSlide;
+    $sender = $(this);
+    srcData = $sender.data();
+    // Куда нажали? 
+    // LI - тогда нам не нужно направление листания, 
+    // Если не LI, тогда возможно это сработала автопрокрутка, - значит надо направление указать, куда мотать, 
+    // Либо нажата кнопка вперед/назад, тогда напавление само сработает
+    nextSlide = $sender.prop('nodeName') == 'LI' ? srcData.slideNumber : (_currentSlide + (parseInt(srcData.navDirection) || 1));
+    _$sliderImages.css({ marginLeft: -_slideWidth * nextSlide });
+    _currentSlide = nextSlide;
+    _$sliderBullets.removeClass('active').eq(_currentSlide).addClass('active');
   }
   
   // Автопрокрутка слайдера
   function _autoSlide(){
-    interval = setInterval(function(){ self.direction = -1 ; _toggleSlide(); }, 5000);
+    interval = setInterval(function(){ _move() }, 5000);
   }
   // Остановим autoslide когда у нас hover
-  function _stopAutoSlide(){      
+  function _stopAutoSlide(){
     window.clearInterval(interval);
   }
-  
-  // Функция перемещающая слайды на начало или на конец, если мы нажали мы попытались переместиться за границы wrapper'a слайдов
-  function _circleIt(){
-    neededMargin = -(self.slideWidth * self.currentSlide);
-    self.$sliderImages.css('margin-left', neededMargin);
-    self.currentMargin = neededMargin;
-  }
 
-  
   return self;
 }

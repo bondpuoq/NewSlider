@@ -9,7 +9,6 @@
       %div
         Вставьте сюда массив ссылок на слайды
       %textarea#urls.inputUrl
-      %div#error_line.error.js-hidden
     %div#js-frame-1.frame.js-frame.hidden
       %script#js-preview-template{type:"x-handlebars-template"}
         {{#each this}}
@@ -26,10 +25,10 @@
               Удалить
         {{/each}}
     %div#js-frame-2.frame.js-frame.hidden
-      %script#js-slider-1{type:"x-handlebars-template"}
+      %script#js-slider-template{type:"x-handlebars-template"}
         %div.slider.js-slider-wrapper
           %div#slides.slides.js-slider-images
-            {{#each data}}
+            {{#each this}}
               %div
                 %img{src: "{{src}}"}
                 {{#if comment}}
@@ -37,11 +36,17 @@
                 {{/if}}
             {{/each}}
           %ul.bullets.js-slider-bullets
-            {{#each data}}
+            {{#each this}}
+              {{#if @index}}
+              <!-- Так как элемент с индексом = 0 преобразуется к false, мы используем это, чтобы назначить активный буллет -->
               %li{data-slide-number:"{{@index}}"}
+              {{else}}
+              %li.active{data-slide-number:"{{@index}}"}
+              {{/if}}
             {{/each}}
-          %div.prev.js-slider-nav{data-nav-direction: "1", data-next-slide:"-1"}
-          %div.next.js-slider-nav{data-nav-direction: "-1", data-next-slide:"1"}
+          %div.prev.js-slider-nav{data-nav-direction: "-1"}
+          %div.next.js-slider-nav{data-nav-direction: "1"}
+    %div#error_line.js-error.hidden
     %div.button.js-btn.js-hidden{id:"js-btn-prev", data-current-frame: "0"}
       Назад
     %div.button.js-btn{id:"js-btn-next", data-current-frame: "0"}

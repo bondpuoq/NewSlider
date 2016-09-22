@@ -13,21 +13,18 @@ $bullet-height: 15px;
 $arrow-width: 15px;
 $arrow-height: 15px;
 
-@mixin standart-font
-{
+@mixin standart-font {
   font-size: $font-size;
   font-family: Verdana, Calibry, Helvetica, Arial;
 } 
 
-@mixin box($padding: 0.2em, $margin: 0.2em)
-{
+@mixin box($padding: 0.2em, $margin: 0.2em) {
 	box-sizing: border-box;
   padding: $padding;
   margin: $margin;
 }
 
-@mixin button($background-color : #000, $font-color: white, $border-color:gray, $width:200px)
-{
+@mixin button($background-color : #000, $font-color: white, $border-color:gray, $width:200px) {
   display: inline-block;
   cursor: pointer;
   border: 1px solid $border-color;
@@ -69,30 +66,25 @@ div {
   height: 200px;
 }
 
-.preview
-{ 
-  &.block
-  {
+.preview { 
+  &.block {
     @include box(0,$small-margin);
     width: $preview-block-width + $small-margin;
     height: $preview-block-height;
     border: 1px solid black;
     float: left;
     z-index: 12;
-    &.disabled
-    {
+    &.disabled {
       z-index: 20;
       background-color: rgba(200,200,200, 0.9);
     }
-    &.disabled:after
-    {
+    &.disabled:after {
       content: "удален";
       color:red;
     }
   }
 
-  &.image-block
-  {
+  &.image-block {
     @include box(0,0);
     margin-top: $small-margin;
     margin-left: $small-margin;
@@ -100,39 +92,33 @@ div {
     z-index: 9;
   }
 
-  &.image-wrap
-  {
+  &.image-wrap {
     @include box(0,0);
     z-index: 9;
   }
 
-  &.image
-  {
+  &.image {
     @include box(0,0);
     width: $small-image-width;
     height: $small-image-height;
     display: block;
   }
 
-  &.comment-block
-  {
+  &.comment-block {
     @include box(0,0);
     padding-left: $small-image-width + ($small-margin*2);
     margin-top: $small-margin;
-    &:after
-    {
+    &:after {
       @include clearfix;
     }
   }
 
-  &.comment-caption
-  {
+  &.comment-caption {
     @include box(0,0);
     margin-bottom: $small-margin;
   }
 
-  &.comment-input
-  {
+  &.comment-input {
     @include box(0,0);
     z-index: 9;
     width: $preview-block-width - $small-image-width - $small-margin*2;
@@ -140,28 +126,24 @@ div {
     resize: none;
   }
 
-  &.slide-delete
-  {
+  &.slide-delete {
     cursor: pointer;
     z-index: 9;
     border-bottom: 2px dashed blue;
     margin-left: $small-margin;
     margin-top: 0;
     display: inline-block;
-    &:hover
-    {
+    &:hover {
       background-color: #ddd;
     }
   }
 }
 
-.js-error 
-{
+.js-error {
   color: $error;
 }
 
-.hidden
-{
+.hidden {
   display: none;
 }
 
@@ -174,45 +156,48 @@ div {
     padding:0;
     margin:0;
 
-  .prev, .next{
+  .prev, .next {
       position:absolute;
       top:$slide-height/2 - $arrow-height;
       display:block;
-      width:50px;
-      height:50px;
+      width:48px;
+      height:48px;
       cursor:pointer;
+      &:hover {
+        border-radius: 25px;
+        background-color: rgba(255,255,255,0.6);
+      }
   }
-  .prev{
+  .prev {
       left:15px;
-      background:url('../images/left.png');
+      background:url('../images/left.png') 0px -2px;
   }
-  .next{
+  .next {
       right:10px;
-      background:url('../images/right.png');
+      background:url('../images/right.png') 0px -2px;
   } 
 
-  .slides{
+  .slides {
     position:relative;
     width:100000px;
     height: $slide-height;
     padding: 0;
     margin:0;
     transition: margin-left 1s linear;
-    div{
+    div {
       float:left;
       width: $slide-width;
       height: $slide-height;
       margin: 0;
       padding:0;
-      img{
+      img {
         width: $slide-width;
         height: $slide-height;
         display: block;
         margin: 0;
         padding:0;
       }
-      div
-      {
+      div {
         top:0px;
         padding: 10px 10px;
         height: auto;
@@ -225,27 +210,33 @@ div {
       }
     }
   }
-  .bullets{
+  .bullets {
     position:absolute;
     bottom:10%;
     text-align: center;
-    height:11px;
+    height:15px;
     margin: 0;
     padding: 0;
     list-style:none;
     width: $slide-width;
     display: inline-block;
-    li{
+    li {
       width:15px;
       height:15px;
       margin:0;
       padding:0;
       display: inline-block;
       background:url(../images/bullet-grey.png) no-repeat;
+      background-color: rgba(10,10,10,0.5);
       background-size: $bullet-width $bullet-height;
-      &.active{
+      &.active {
         background:url(../images/bullet-yellow.png) no-repeat;
         background-size: $bullet-width $bullet-height;
+        background-color: rgba(10,10,10,0.5);
+      }
+      &:hover {
+        background-color: rgba(255,255,255,0.6);
+        border-radius: 10px;
       }
     }
   }

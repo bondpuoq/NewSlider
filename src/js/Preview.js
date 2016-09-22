@@ -1,5 +1,5 @@
 function Preview(params) {
-  var self, _paramObject, _hbObject, _data;
+  var self, _params, _hbObject, _data;
   // params содержит в себе: 
   // 1) .rawUrlString - введенные пользователем url
   // 2) .$insertInto - куда должен в итоге вставиться элемент в методе render()
@@ -24,8 +24,9 @@ function Preview(params) {
         $hbTemplate: $('#js-preview-template')
       }
     }
+
     _data = _getUrls(_params.rawUrlString);
-    _hbObject = Handlebars.compile(_params.$hbTemplate.html());
+    _hbObject = Handlebars.compile(_params.$hbTemplate.html()); 
   }
   function _render() {
     _params.$insertInto.html(_hbObject(_data));
@@ -48,12 +49,18 @@ function Preview(params) {
 
 
   // Делаем массив url'ов из введенной пользователем строки
-  function _getUrls(rawUrlString){
+  function _getUrls(rawUrlString) {
     var i = 0, urlArray;
     urlArray = rawUrlString.split(",")
-      .map(function(current){
+      .map(function(current) {
         return {number: i++, src: current.trim().replace("\"","")}
       });
+    // Выбрасывание ошибки, если пользователь ввел битые Url
+    if (urlArray.length === 1) {
+      var img = new Image();
+      img.src = urlArray[0];
+      img.onerror = (function(){throw {name:'fuck', message: 'shit'}})();
+    }
     return urlArray;
     };
 
