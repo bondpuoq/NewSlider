@@ -8,9 +8,7 @@ function Slider(params){
     move : _move,
     autoSlide : _autoSlide,
     stopAutoSlide : _stopAutoSlide
-  }
-
-  
+  }  
 
   function _init(params) {
     _params = params;
@@ -54,6 +52,7 @@ function Slider(params){
   function _autoSlide() {
     interval = setInterval(function(){ _move() }, 5000);
   }
+  
   // Остановим autoslide когда у нас hover
   function _stopAutoSlide() {
     window.clearInterval(interval);

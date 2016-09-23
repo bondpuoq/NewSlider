@@ -27,10 +27,12 @@ function Preview() {
     _hbTemplate = _hbTemplate || _params.$hbTemplate.html();
     _hbObject = Handlebars.compile(_hbTemplate); 
   }
+
   function _render() {
     _params.$insertInto.html(_hbObject(_data));
     //$(_hbObject(_data)).appendTo(_params.$insertInto);
   }
+
   function _edit() {
     var comment, index;
     index = $(this).data('preview-number');
@@ -38,12 +40,14 @@ function Preview() {
     $(_data)[index].comment = comment;
     self.render();
   }
+
   function _remove() {
     var index;
     index = $(this).data('preview-number');
     _data.splice(index,1);
     self.render();
   }
+  
   function _save() {
     return _data;
   }

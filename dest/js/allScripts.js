@@ -14770,10 +14770,12 @@ function Preview() {
     _hbTemplate = _hbTemplate || _params.$hbTemplate.html();
     _hbObject = Handlebars.compile(_hbTemplate); 
   }
+
   function _render() {
     _params.$insertInto.html(_hbObject(_data));
     //$(_hbObject(_data)).appendTo(_params.$insertInto);
   }
+
   function _edit() {
     var comment, index;
     index = $(this).data('preview-number');
@@ -14781,12 +14783,14 @@ function Preview() {
     $(_data)[index].comment = comment;
     self.render();
   }
+
   function _remove() {
     var index;
     index = $(this).data('preview-number');
     _data.splice(index,1);
     self.render();
   }
+  
   function _save() {
     return _data;
   }
@@ -14814,9 +14818,7 @@ function Slider(params){
     move : _move,
     autoSlide : _autoSlide,
     stopAutoSlide : _stopAutoSlide
-  }
-
-  
+  }  
 
   function _init(params) {
     _params = params;
@@ -14860,6 +14862,7 @@ function Slider(params){
   function _autoSlide() {
     interval = setInterval(function(){ _move() }, 5000);
   }
+  
   // Остановим autoslide когда у нас hover
   function _stopAutoSlide() {
     window.clearInterval(interval);
