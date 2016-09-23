@@ -58,7 +58,7 @@ function Preview() {
     var i = 0, urlArray;
     urlArray = rawUrlString.split(",")
       .map(function(current) {
-        return {number: i++, src: current.trim().replace("\"","")}
+        return {number: i++, src: current.trim().replace(/"/g,'')}
       });
     return urlArray;
     };
