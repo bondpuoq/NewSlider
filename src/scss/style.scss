@@ -182,7 +182,8 @@ div {
     width:100000px;
     height: $slide-height;
     padding: 0;
-    margin:0;
+    margin: 0;
+    margin-left:-$slide-width;
     transition: margin-left 1s linear;
     div {
       float:left;
@@ -209,6 +210,12 @@ div {
         background-color: rgba(30,30,30,0.7);
       }
     }
+  }
+  .notransition {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
   }
   .bullets {
     position:absolute;

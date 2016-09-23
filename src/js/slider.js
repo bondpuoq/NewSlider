@@ -21,14 +21,16 @@ function Slider(params){
   function _render() {
     _params.$insertInto.html(_hbObject(_data));
     //$(_hbObject(_data)).appendTo(_params.$insertInto);
-    _$sliderImages = $('.js-slider-images').eq(0);
+    _$sliderImages = $('.js-slider-images');
     _slideWidth = _$sliderImages.children('div').width();
     _$sliderBullets = $('.js-slider-bullets>li');
     _slideCount = $('.js-slider-images>div').length;
+    _$sliderImages.children().last().clone().prependTo(_$sliderImages);
+    _$sliderImages.children().eq(1).clone().appendTo(_$sliderImages);
   }
   
   function _move() {
-    var srcData, $sender, nextSlide;
+    var srcData, $sender, nextSlide, propertyObject;
     $sender = $(this);
     srcData = $sender.data();
     // Куда нажали? 
@@ -36,23 +38,37 @@ function Slider(params){
     // Если не LI, тогда возможно это сработала автопрокрутка, - значит надо направление указать, куда мотать, 
     // Либо нажата кнопка вперед/назад, тогда напавление само сработает
     nextSlide = $sender.prop('nodeName') == 'LI' ? srcData.slideNumber : (_currentSlide + (parseInt(srcData.navDirection) || 1));
+    _$sliderImages.css({ marginLeft: -_slideWidth+(-_slideWidth * nextSlide) });
+
     if (nextSlide == _slideCount) {
-      _$sliderImages.css({ transition:0 });
+      propertyObject = { marginLeft: -_slideWidth }; 
+      _$sliderImages.on('transitionend', function() {_resetTransition(_$sliderImages, propertyObject); _$sliderImages.off('transitionend'); });
       nextSlide = 0;
+      _currentSlide = 0;
     } else if (nextSlide == -1) {
-      _$sliderImages.css({ transition:0 });
+      propertyObject = { marginLeft: (-_slideWidth * _slideCount) };
+      _$sliderImages.on('transitionend', function() {_resetTransition(_$sliderImages, propertyObject); _$sliderImages.off('transitionend'); });
       nextSlide = _slideCount - 1;
+      _currentSlide = _slideCount - 1;
+    } else {
+      _currentSlide = nextSlide;
     }
-    _$sliderImages.css({ marginLeft: -_slideWidth * nextSlide });
-    _currentSlide = nextSlide;
     _$sliderBullets.removeClass('active').eq(_currentSlide).addClass('active');
   }
   
+  // Эта несуразность помогает отрендерить css при переключении крайних слайдов, иначе transition не отключается
+  function _resetTransition($objectToReset, propertyObject) {
+    $objectToReset.addClass('notransition');
+    $objectToReset.css(propertyObject);
+    $objectToReset[0].offsetHeight;
+    $objectToReset.removeClass('notransition');
+  }
+
   // Автопрокрутка слайдера
   function _autoSlide() {
     interval = setInterval(function(){ _move() }, 5000);
   }
-  
+
   // Остановим autoslide когда у нас hover
   function _stopAutoSlide() {
     window.clearInterval(interval);

@@ -152,6 +152,7 @@ div {
     height: 400px;
     padding: 0;
     margin: 0;
+    margin-left: -600px;
     -webkit-transition: margin-left 1s linear;
     transition: margin-left 1s linear; }
     .slider .slides div {
@@ -176,6 +177,9 @@ div {
         font-weight: bold;
         margin: 0;
         background-color: rgba(30, 30, 30, 0.7); }
+  .slider .notransition {
+    -webkit-transition: none !important;
+    transition: none !important; }
   .slider .bullets {
     position: absolute;
     bottom: 10%;
