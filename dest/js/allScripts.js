@@ -14813,8 +14813,8 @@ function Preview() {
 }
 
 function Slider(params){
-  var interval, _params, _data, _hbTemplate, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide, _slideCount;
-  var self = this;
+  var interval, _params, _data, _hbTemplate, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide, _slideCount, self;
+  self = this;
 
   self = {
     init : _init,
@@ -14851,7 +14851,7 @@ function Slider(params){
     // LI - тогда нам не нужно направление листания, 
     // Если не LI, тогда возможно это сработала автопрокрутка, - значит надо направление указать, куда мотать, 
     // Либо нажата кнопка вперед/назад, тогда напавление само сработает
-    nextSlide = $sender.is('.bullets li') ? srcData.slideNumber : (_currentSlide + (parseInt(srcData.navDirection) || 1));
+    nextSlide = srcData.slideNumber || (_currentSlide + (parseInt(srcData.navDirection) || 1));
     _$sliderImages.css({ marginLeft: -_slideWidth+(-_slideWidth * nextSlide) });
 
     if (nextSlide == _slideCount) {
@@ -14878,10 +14878,10 @@ function Slider(params){
   
   // Эта несуразность помогает отрендерить css при переключении крайних слайдов, иначе transition не отключается
   function _resetTransition($objectToReset, propertyObject) {
-    $objectToReset.addClass('notransition');
+    $objectToReset.addClass('no-transition');
     $objectToReset.css(propertyObject);
     $objectToReset[0].offsetHeight;
-    $objectToReset.removeClass('notransition');
+    $objectToReset.removeClass('no-transition');
   }
 
   // Автопрокрутка слайдера

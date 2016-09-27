@@ -177,7 +177,7 @@ div {
         font-weight: bold;
         margin: 0;
         background-color: rgba(30, 30, 30, 0.7); }
-  .slider .notransition {
+  .slider .no-transition {
     -webkit-transition: none !important;
     transition: none !important; }
   .slider .bullets {
