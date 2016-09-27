@@ -37,17 +37,23 @@ function Slider(params){
     // LI - тогда нам не нужно направление листания, 
     // Если не LI, тогда возможно это сработала автопрокрутка, - значит надо направление указать, куда мотать, 
     // Либо нажата кнопка вперед/назад, тогда напавление само сработает
-    nextSlide = $sender.prop('nodeName') == 'LI' ? srcData.slideNumber : (_currentSlide + (parseInt(srcData.navDirection) || 1));
+    nextSlide = $sender.is('.bullets li') ? srcData.slideNumber : (_currentSlide + (parseInt(srcData.navDirection) || 1));
     _$sliderImages.css({ marginLeft: -_slideWidth+(-_slideWidth * nextSlide) });
 
     if (nextSlide == _slideCount) {
       propertyObject = { marginLeft: -_slideWidth }; 
-      _$sliderImages.on('transitionend', function() {_resetTransition(_$sliderImages, propertyObject); _$sliderImages.off('transitionend'); });
+      _$sliderImages.on('transitionend', function() {
+        _resetTransition(_$sliderImages, propertyObject); 
+        _$sliderImages.off('transitionend'); 
+      });
       nextSlide = 0;
       _currentSlide = 0;
     } else if (nextSlide == -1) {
       propertyObject = { marginLeft: (-_slideWidth * _slideCount) };
-      _$sliderImages.on('transitionend', function() {_resetTransition(_$sliderImages, propertyObject); _$sliderImages.off('transitionend'); });
+      _$sliderImages.on('transitionend', function() {
+        _resetTransition(_$sliderImages, propertyObject); 
+        _$sliderImages.off('transitionend'); 
+      });
       nextSlide = _slideCount - 1;
       _currentSlide = _slideCount - 1;
     } else {

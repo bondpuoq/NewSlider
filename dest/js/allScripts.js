@@ -10105,6 +10105,8 @@ return jQuery;
     }
     preview.init(parameters); 
     preview.render();
+
+    $('#js-frame-1').off('click change');
     // Клик по кнопке удалить на слайде внутри превью
     $('#js-frame-1').on('click', '.js-slide-delete', preview.remove);
     // Изменение текста внутри input'а слайда в превью
@@ -10125,6 +10127,7 @@ return jQuery;
     slider.autoSlide();
 
     // Клик по кнопке удалить на слайде внутри превью
+    $('#js-frame-2').off('click mouseenter mouseleave');
     $('#js-frame-2').on('click', '.js-slider-nav', slider.move);
     $('#js-frame-2').on('click', '.js-slider-bullets li', slider.move);
     $('#js-frame-2').on('mouseenter', '.js-slider-nav', slider.stopAutoSlide);
@@ -14808,6 +14811,7 @@ function Preview() {
 
   return self; 
 }
+
 function Slider(params){
   var interval, _params, _data, _hbTemplate, _hbObject, _$sliderImages, _$sliderBullets, _slideWidth, _currentSlide, _slideCount;
   var self = this;
@@ -14847,17 +14851,23 @@ function Slider(params){
     // LI - тогда нам не нужно направление листания, 
     // Если не LI, тогда возможно это сработала автопрокрутка, - значит надо направление указать, куда мотать, 
     // Либо нажата кнопка вперед/назад, тогда напавление само сработает
-    nextSlide = $sender.prop('nodeName') == 'LI' ? srcData.slideNumber : (_currentSlide + (parseInt(srcData.navDirection) || 1));
+    nextSlide = $sender.is('.bullets li') ? srcData.slideNumber : (_currentSlide + (parseInt(srcData.navDirection) || 1));
     _$sliderImages.css({ marginLeft: -_slideWidth+(-_slideWidth * nextSlide) });
 
     if (nextSlide == _slideCount) {
       propertyObject = { marginLeft: -_slideWidth }; 
-      _$sliderImages.on('transitionend', function() {_resetTransition(_$sliderImages, propertyObject); _$sliderImages.off('transitionend'); });
+      _$sliderImages.on('transitionend', function() {
+        _resetTransition(_$sliderImages, propertyObject); 
+        _$sliderImages.off('transitionend'); 
+      });
       nextSlide = 0;
       _currentSlide = 0;
     } else if (nextSlide == -1) {
       propertyObject = { marginLeft: (-_slideWidth * _slideCount) };
-      _$sliderImages.on('transitionend', function() {_resetTransition(_$sliderImages, propertyObject); _$sliderImages.off('transitionend'); });
+      _$sliderImages.on('transitionend', function() {
+        _resetTransition(_$sliderImages, propertyObject); 
+        _$sliderImages.off('transitionend'); 
+      });
       nextSlide = _slideCount - 1;
       _currentSlide = _slideCount - 1;
     } else {

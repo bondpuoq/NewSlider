@@ -44,6 +44,8 @@
     }
     preview.init(parameters); 
     preview.render();
+
+    $('#js-frame-1').off('click change');
     // Клик по кнопке удалить на слайде внутри превью
     $('#js-frame-1').on('click', '.js-slide-delete', preview.remove);
     // Изменение текста внутри input'а слайда в превью
@@ -64,6 +66,7 @@
     slider.autoSlide();
 
     // Клик по кнопке удалить на слайде внутри превью
+    $('#js-frame-2').off('click mouseenter mouseleave');
     $('#js-frame-2').on('click', '.js-slider-nav', slider.move);
     $('#js-frame-2').on('click', '.js-slider-bullets li', slider.move);
     $('#js-frame-2').on('mouseenter', '.js-slider-nav', slider.stopAutoSlide);
